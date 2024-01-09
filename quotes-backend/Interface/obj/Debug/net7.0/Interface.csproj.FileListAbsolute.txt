@@ -1,0 +1,15 @@
+E:\git\quotes-backend\quotes-backend\Interface\bin\Debug\net7.0\Interface.deps.json
+E:\git\quotes-backend\quotes-backend\Interface\bin\Debug\net7.0\Interface.dll
+E:\git\quotes-backend\quotes-backend\Interface\bin\Debug\net7.0\Interface.pdb
+E:\git\quotes-backend\quotes-backend\Interface\bin\Debug\net7.0\DTO.dll
+E:\git\quotes-backend\quotes-backend\Interface\bin\Debug\net7.0\DTO.pdb
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\Interface.csproj.AssemblyReference.cache
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\Interface.GeneratedMSBuildEditorConfig.editorconfig
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\Interface.AssemblyInfoInputs.cache
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\Interface.AssemblyInfo.cs
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\Interface.csproj.CoreCompileInputs.cache
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\Interface.csproj.CopyComplete
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\Interface.dll
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\refint\Interface.dll
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\Interface.pdb
+E:\git\quotes-backend\quotes-backend\Interface\obj\Debug\net7.0\ref\Interface.dll

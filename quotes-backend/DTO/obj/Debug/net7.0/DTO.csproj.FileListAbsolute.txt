@@ -1,0 +1,12 @@
+E:\git\quotes-backend\quotes-backend\DTO\bin\Debug\net7.0\DTO.deps.json
+E:\git\quotes-backend\quotes-backend\DTO\bin\Debug\net7.0\DTO.dll
+E:\git\quotes-backend\quotes-backend\DTO\bin\Debug\net7.0\DTO.pdb
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\DTO.GeneratedMSBuildEditorConfig.editorconfig
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\DTO.AssemblyInfoInputs.cache
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\DTO.AssemblyInfo.cs
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\DTO.csproj.CoreCompileInputs.cache
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\DTO.dll
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\refint\DTO.dll
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\DTO.pdb
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\ref\DTO.dll
+E:\git\quotes-backend\quotes-backend\DTO\obj\Debug\net7.0\DTO.csproj.AssemblyReference.cache

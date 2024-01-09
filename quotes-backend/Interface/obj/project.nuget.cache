@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "OnazLHUPpX3pBrCEXK0aaJk1fPh2cBMhs7kA22usaRikBVTOkpZ8r2qWB8T2yrr9lAdxB6mTa4fEvb2Ryz3W2w==",
+  "success": true,
+  "projectFilePath": "E:\\git\\quotes-backend\\quotes-backend\\Interface\\Interface.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\gutar\\.nuget\\packages\\mongodb.bson\\2.23.1\\mongodb.bson.2.23.1.nupkg.sha512",
+    "C:\\Users\\gutar\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\gutar\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
