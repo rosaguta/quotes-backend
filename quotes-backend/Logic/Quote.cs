@@ -8,6 +8,6 @@ public class Quote
 
     public override string ToString()
     {
-        return text + " - " + person + " " + DateTimeCreated.ToString("dd-MM-yyyy HH:mm:ss");
+        return text + " - " + person + " " + DateTimeCreated.ToString("dd/M/yyyy HH:mm");
     }
 }
