@@ -6,6 +6,12 @@ namespace quotes_backend.Controllers;
 [Route("[controller]")]
 public class QuoteController : ControllerBase
 {
+    private QuoteCollection _quoteCollection;
+    public QuoteController()
+    {
+        _quoteCollection = new QuoteCollection();
+    }
+    
     [HttpGet(Name = "GetRandomQuote")]
     public IActionResult Get()
     {
@@ -19,9 +25,9 @@ public class QuoteController : ControllerBase
     [HttpPost(Name = "NewQuote")]
     public bool NewQuote([FromBody] Quote quote)
     {
-        QuoteCollection quoteCollection = new QuoteCollection();
+        _quoteCollection = new QuoteCollection();
         
-        bool created = quoteCollection.NewQuote(quote);
+        bool created = _quoteCollection.NewQuote(quote);
         return created;
     }
 }
