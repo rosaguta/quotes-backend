@@ -5,7 +5,8 @@ namespace Interface;
 public interface IQuoteDAL
 {
     QuoteDTO? GetRandomQuote(int randomint);
-    bool NewQuote(QuoteDTO QuoteDTO);
+    bool NewQuote(QuoteDTOPost QuoteDTO);
     List<QuoteDTO> GetAllQuotes();
     int CountDocuments();
+    bool UpdateQuote(string id, QuoteDTO quoteDto);
 }

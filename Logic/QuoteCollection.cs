@@ -35,10 +35,9 @@ public class QuoteCollection
         return quote.ToString();
     }
 
-    public bool NewQuote(Quote quote)
+    public bool NewQuote(QuoteDTOPost quote)
     {
-        QuoteDTO quoteDto = quote.ConvertToDTO();
-        bool created =_QuoteInterface.NewQuote(quoteDto);
+        bool created =_QuoteInterface.NewQuote(quote);
         return created;
     }
 
@@ -51,6 +50,13 @@ public class QuoteCollection
         }
 
         return Quotes;
+    }
+
+    public bool UpdateQuote(string id, Quote quote)
+    {
+        QuoteDTO quoteDto = quote.ConvertToDTO();
+        bool updated = _QuoteInterface.UpdateQuote(id, quoteDto);
+        return updated;
     }
     private int GetLenghtOfDB()
     {

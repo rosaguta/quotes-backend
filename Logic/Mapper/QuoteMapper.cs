@@ -13,6 +13,7 @@ public static class QuoteMapper
 
         return new Quote()
         {
+            id = quoteDto.id,
             text = quoteDto.text,
             person = quoteDto.person,
             DateTimeCreated = quoteDto.DateTimeCreated
@@ -28,6 +29,7 @@ public static class QuoteMapper
 
         return new QuoteDTO()
         {
+            id = quote.id,
             text = quote.text,
             person = quote.person,
             DateTimeCreated = quote.DateTimeCreated

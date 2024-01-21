@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DnsClient;
 using DTO;
 using Interface;
 
@@ -39,8 +40,9 @@ public class QuoteDAL : IQuoteDAL
         }
     }
 
-    public bool NewQuote(QuoteDTO quoteDto)
+    public bool NewQuote(QuoteDTOPost quoteDto)
     {
+        
         BsonDocument bsonDocument = quoteDto.ToBsonDocument();
 
         try
@@ -72,7 +74,7 @@ public class QuoteDAL : IQuoteDAL
             {
                 quoteDtos.Add(new QuoteDTO
                 {
-                    text = doc["Text"].ToString(), person = doc["Person"].ToString(), DateTimeCreated = dateTimeCreated
+                    id = doc["_id"].ToString() ,text = doc["Text"].ToString(), person = doc["Person"].ToString(), DateTimeCreated = dateTimeCreated
                 });
             }
             catch
@@ -86,6 +88,7 @@ public class QuoteDAL : IQuoteDAL
 
         return quoteDtos;
     }
+    
 
     public int CountDocuments()
     {
@@ -95,6 +98,22 @@ public class QuoteDAL : IQuoteDAL
         return totalCountInt;
     }
 
+    public bool UpdateQuote(string id, QuoteDTO quoteDto)
+    {
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
+        var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
+        var update = Builders<BsonDocument>.Update
+            .Set("Text", quoteDto.text)
+            .Set("Person", quoteDto.person)
+            .Set("DateTimeCreated", quoteDto.DateTimeCreated);
+        var result = collection.UpdateOne(filter, update);
+        if (result.IsAcknowledged && result.ModifiedCount > 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
     private string? GetConnectionString()
     {
         string? connectionstring = Environment.GetEnvironmentVariable("MONGODB");
@@ -105,4 +124,5 @@ public class QuoteDAL : IQuoteDAL
         }
         return connectionstring;
     }
+    
 }
