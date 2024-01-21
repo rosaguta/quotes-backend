@@ -1,4 +1,6 @@
-﻿namespace Logic;
+﻿using System;
+
+namespace Logic;
 
 public class Quote
 {

@@ -1,4 +1,5 @@
-﻿using DTO;
+﻿using System.Collections.Generic;
+using DTO;
 namespace Interface;
 
 public interface IQuoteDAL
