@@ -36,10 +36,20 @@ public class QuoteCollection
     public bool NewQuote(Quote quote)
     {
         QuoteDTO quoteDto = quote.ConvertToDTO();
-        bool created = true;
+        bool created =_QuoteInterface.NewQuote(quoteDto);
         return created;
     }
 
+    public List<Quote> GetAllQuotes()
+    {
+        List<QuoteDTO> allDTOquotes = _QuoteInterface.GetAllQuotes();
+        foreach (QuoteDTO quoteDto in allDTOquotes)
+        {
+            Quotes.Add(quoteDto.ConvertToLogic());
+        }
+
+        return Quotes;
+    }
     private int GetLenghtOfDB()
     {
         int len = _QuoteInterface.GetAllQuotes().Count;

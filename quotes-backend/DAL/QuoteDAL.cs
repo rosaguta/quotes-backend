@@ -39,7 +39,21 @@ public class QuoteDAL : IQuoteDAL
 
     public bool NewQuote(QuoteDTO quoteDto)
     {
-        return false;
+        BsonDocument bsonDocument = quoteDto.ToBsonDocument();
+
+        try
+        {
+            IMongoCollection<BsonDocument> collection =
+                _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
+            collection.InsertOne(bsonDocument);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            return false;
+        }
+        
+        return true;
     }
 
     public List<QuoteDTO> GetAllQuotes()

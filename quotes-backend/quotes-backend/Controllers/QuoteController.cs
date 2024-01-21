@@ -22,6 +22,14 @@ public class QuoteController : ControllerBase
         }
         return Ok(quote);
     }
+
+    [HttpGet]
+    [Route("All")]
+    public List<Quote> AllQuotes()
+    {
+        List<Quote> allquotes = _quoteCollection.GetAllQuotes();
+        return allquotes;
+    }
     [HttpPost(Name = "NewQuote")]
     public bool NewQuote([FromBody] Quote quote)
     {
@@ -30,4 +38,5 @@ public class QuoteController : ControllerBase
         bool created = _quoteCollection.NewQuote(quote);
         return created;
     }
+    
 }
