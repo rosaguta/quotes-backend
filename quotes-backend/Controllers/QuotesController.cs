@@ -33,12 +33,16 @@ public class QuotesController : ControllerBase
         return allquotes;
     }
     [HttpPost(Name = "NewQuote")]
-    public bool NewQuote([FromBody] QuoteDTOPost quote)
+    public IActionResult NewQuote([FromBody] QuoteDTOPost quote)
     {
         _quoteCollection = new QuoteCollection();
         
         bool created = _quoteCollection.NewQuote(quote);
-        return created;
+        if (created)
+        {
+            return Ok(created);
+        }
+        return BadRequest(created);
     }
 
     [HttpPut]

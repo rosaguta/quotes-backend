@@ -14,17 +14,34 @@ public class RizzDAL : IRizzDAL
     }   
     public int CountDocuments()
     {
-        throw new NotImplementedException();
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("Rizz");
+        var totalCount = collection.CountDocuments(new BsonDocument());  
+        int totalCountInt = (int)totalCount;
+        return totalCountInt;
     }
 
-    public bool NewRizz(QuoteDTOPost QuoteDTO)
+    public bool NewRizz(QuoteDTOPost quoteDto)
     {
-        throw new NotImplementedException();
+        BsonDocument bsonDocument = quoteDto.ToBsonDocument();
+
+        try
+        {
+            IMongoCollection<BsonDocument> collection =
+                _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
+            collection.InsertOne(bsonDocument);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            return false;
+        }
+        
+        return true;
     }
 
     public List<QuoteDTO> GetAllRizz()
     {
-        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("Rizz");
         var filter = Builders<BsonDocument>.Filter.Empty;
         var documents = collection.Find(filter).ToList();
         List<QuoteDTO> quoteDtos = new List<QuoteDTO>();
@@ -53,12 +70,42 @@ public class RizzDAL : IRizzDAL
 
     public QuoteDTO? GetRandomRizz(int randomint)
     {
-        throw new NotImplementedException();
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("Rizz");
+        var filter = Builders<BsonDocument>.Filter.Empty;
+        var doc = collection.Find(filter).Skip(randomint).Limit(1).FirstOrDefault();
+        try
+        {
+            string dateTimeString = doc["DateTimeCreated"].ToString();
+            DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
+
+            return new QuoteDTO
+            {
+                text = doc["Text"].ToString(),
+                person = doc["Person"].ToString(),
+                DateTimeCreated = dateTimeCreated
+            };
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public bool UpdateRizz(string id, QuoteDTO quoteDto)
     {
-        throw new NotImplementedException();
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("Rizz");
+        var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
+        var update = Builders<BsonDocument>.Update
+            .Set("Text", quoteDto.text)
+            .Set("Person", quoteDto.person)
+            .Set("DateTimeCreated", quoteDto.DateTimeCreated);
+        var result = collection.UpdateOne(filter, update);
+        if (result.IsAcknowledged && result.ModifiedCount > 0)
+        {
+            return true;
+        }
+
+        return false;
     }
     
     private string? GetConnectionString()

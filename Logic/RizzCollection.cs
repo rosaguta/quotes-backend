@@ -14,6 +14,7 @@ public class RizzCollection
 
     public RizzCollection()
     {
+        Rizzes = new List<Quote>();
         _rizzInterface = DalFactory.Getrizz();
     }
     public List<Quote>? GetAllRizz()
@@ -44,8 +45,19 @@ public class RizzCollection
         }
         Quote rizz = rizzDto.ConvertToLogic();
         return rizz.ToString();
+    }
 
+    public bool NewRizz(QuoteDTOPost rizzPost)
+    {
+        bool created = _rizzInterface.NewRizz(rizzPost);
+        return created;
+    }
 
+    public bool UpdateRizz(string id, Quote rizz)
+    {
+        QuoteDTO quoteDto = rizz.ConvertToDTO();
+        bool updated = _rizzInterface.UpdateRizz(id, quoteDto);
+        return updated;
     }
     private int GetLenghtOfDB()
     {

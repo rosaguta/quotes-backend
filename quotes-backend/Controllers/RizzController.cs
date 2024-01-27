@@ -1,3 +1,4 @@
+using DTO;
 using Microsoft.AspNetCore.Mvc;
 using Logic;
 namespace quotes_backend.Controllers;
@@ -34,7 +35,33 @@ public class RizzController : ControllerBase
         {
             return Ok(rizz);
         }
-
         return NoContent();
     }
+
+    [HttpPost]
+    [Route("/Rizzes")]
+    public IActionResult NewRizz([FromBody] QuoteDTOPost rizzpost)
+    {
+        bool created= _RizzCollection.NewRizz(rizzpost);
+        if (created)
+        {
+            return Ok(created);
+        }
+
+        return BadRequest(created);
+    }
+
+    [HttpPut]
+    [Route("/Rizzes/{id}")]
+    public IActionResult UpdateRizz(string id, [FromBody] Quote rizz)
+    {
+        bool updated = _RizzCollection.UpdateRizz(id, rizz);
+        if (updated)
+        {
+            return Ok(updated);
+            
+        }
+        return BadRequest(updated);
+    }
+
 }
