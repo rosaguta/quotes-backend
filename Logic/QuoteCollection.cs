@@ -17,10 +17,9 @@ public class QuoteCollection
     public QuoteCollection()
     {
         Quotes = new List<Quote>();
-        _QuoteInterface = Factory.FactoryQuotaDal.Get();
+        _QuoteInterface = DalFactory.Get();
         _random = new Random();
     }
-    
     public string? GetRandomQuote()
     {
         int lenghtofdb = GetLenghtOfDB();
@@ -34,13 +33,11 @@ public class QuoteCollection
         Quote quote = quoteDto.ConvertToLogic();
         return quote.ToString();
     }
-
     public bool NewQuote(QuoteDTOPost quote)
     {
         bool created =_QuoteInterface.NewQuote(quote);
         return created;
     }
-
     public List<Quote> GetAllQuotes()
     {
         List<QuoteDTO> allDTOquotes = _QuoteInterface.GetAllQuotes();
@@ -51,7 +48,6 @@ public class QuoteCollection
 
         return Quotes;
     }
-
     public bool UpdateQuote(string id, Quote quote)
     {
         QuoteDTO quoteDto = quote.ConvertToDTO();
