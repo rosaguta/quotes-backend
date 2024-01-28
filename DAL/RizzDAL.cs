@@ -14,7 +14,7 @@ public class RizzDAL : IRizzDAL
     }   
     public int CountDocuments()
     {
-        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("Rizz");
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
         var totalCount = collection.CountDocuments(new BsonDocument());  
         int totalCountInt = (int)totalCount;
         return totalCountInt;
@@ -41,7 +41,7 @@ public class RizzDAL : IRizzDAL
 
     public List<QuoteDTO> GetAllRizz()
     {
-        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("Rizz");
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
         var filter = Builders<BsonDocument>.Filter.Empty;
         var documents = collection.Find(filter).ToList();
         List<QuoteDTO> quoteDtos = new List<QuoteDTO>();
@@ -70,7 +70,7 @@ public class RizzDAL : IRizzDAL
 
     public QuoteDTO? GetRandomRizz(int randomint)
     {
-        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("Rizz");
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
         var filter = Builders<BsonDocument>.Filter.Empty;
         var doc = collection.Find(filter).Skip(randomint).Limit(1).FirstOrDefault();
         try
@@ -93,7 +93,7 @@ public class RizzDAL : IRizzDAL
 
     public bool UpdateRizz(string id, QuoteDTO quoteDto)
     {
-        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("Rizz");
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
         var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
         var update = Builders<BsonDocument>.Update
             .Set("Text", quoteDto.text)
