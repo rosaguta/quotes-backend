@@ -11,11 +11,18 @@ namespace DAL;
 
 public class QuoteDAL : IQuoteDAL
 {
-    private MongoClient _mongodbclient;
+    private MongoClient? _mongodbclient;
 
     public QuoteDAL()
     {
-        _mongodbclient = new MongoClient(GetConnectionString());
+        try
+        {
+            _mongodbclient = new MongoClient(GetConnectionString());
+        }
+        catch
+        {
+            throw new Exception("connectionstring is incorrect");
+        }
     }   
     public QuoteDTO GetRandomQuote(int randomint)
     {
@@ -114,15 +121,43 @@ public class QuoteDAL : IQuoteDAL
 
         return false;
     }
+
+    public bool DeleteQuote(string id)
+    {
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
+        var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
+        var result = collection.DeleteOne(filter);
+        return result.DeletedCount > 0;
+    }
     private string? GetConnectionString()
     {
-        string? connectionstring = Environment.GetEnvironmentVariable("MONGODB");
-        if (connectionstring is null)
+        string? mongoHost = Environment.GetEnvironmentVariable("MONGODB");
+        string? mongoUsername = Environment.GetEnvironmentVariable("MONGODB_USERNAME");
+        string? mongoPassword = Environment.GetEnvironmentVariable("MONGODB_PASSWORD");
+        string? mongoPort = Environment.GetEnvironmentVariable("MONGODB_PORT");
+        if (mongoHost is null)
         {
-            Console.WriteLine("You must provide an Environmental variable: MONGODB");
+            Console.WriteLine("You must provide the host in the following Env variable: MONGODB");
             Environment.Exit(0);
         }
+        if (mongoUsername is null)
+        {
+            Console.WriteLine("You must provide the username in the following Env variable: MONGODB_USERNAME");
+            Environment.Exit(0);
+        }
+        if (mongoPassword is null)
+        {
+            Console.WriteLine("You must provide the password in the following Env variable: MONGODB_PASSWORD");
+            Environment.Exit(0);
+        }
+
+        if (mongoPort is null)
+        {
+            Console.WriteLine("You must provide the port in the following Env variable: MONGODB_PORT");
+            Environment.Exit(0);
+        }
+
+        string connectionstring = $"mongodb://{mongoUsername}:{mongoPassword}@{mongoHost}:{mongoPort}/";
         return connectionstring;
     }
-    
 }

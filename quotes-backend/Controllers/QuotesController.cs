@@ -18,7 +18,7 @@ public class QuotesController : ControllerBase
     [Route("Random")]
     public IActionResult GetRandom()
     {
-        string? quote = new QuoteCollection().GetRandomQuote();
+        string? quote = _quoteCollection.GetRandomQuote();
         if (quote is null)
         {
             return BadRequest("Something went wrong, blame Rose for this issue :3");
@@ -52,6 +52,19 @@ public class QuotesController : ControllerBase
         _quoteCollection.Quotes.Add(quote);
         bool updated = _quoteCollection.UpdateQuote(id, quote);
         return Ok();
+    }
+
+    [HttpDelete]
+    [Route("{id}")]
+    public IActionResult Delete(string id)
+    {
+        bool deleted = _quoteCollection.DeleteQuote(id);
+        if (deleted)
+        {
+            return Ok();
+        }
+
+        return BadRequest();
     }
     
 }

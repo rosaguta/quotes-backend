@@ -54,6 +54,11 @@ public class QuoteCollection
         bool updated = _QuoteInterface.UpdateQuote(id, quoteDto);
         return updated;
     }
+
+    public bool DeleteQuote(string id)
+    {
+        return _QuoteInterface.DeleteQuote(id);
+    }
     private int GetLenghtOfDB()
     {
         int len = _QuoteInterface.GetAllQuotes().Count;
