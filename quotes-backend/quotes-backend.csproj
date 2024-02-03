@@ -22,5 +22,20 @@
     <ItemGroup>
       <ProjectReference Include="..\Logic\Logic.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <Resource Include="Content\css\DIV.css" />
+        <Resource Include="wwwroot\css\DIV.css" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <EmbeddedResource Include="wwwroot\image\div_logo_white2.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="Content\image\div_logo_white2.png" />
+      <EmbeddedResource Include="Content\image\div_logo_white2.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
 
 </Project>
