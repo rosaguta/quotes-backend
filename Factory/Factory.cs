@@ -4,13 +4,18 @@ namespace Factory;
 
 public static class DalFactory
 {
-    public static IQuoteDAL Get()
+    public static IQuoteDAL GetQuoteDal()
     {
         return new QuoteDAL();
     }
 
-    public static IRizzDAL Getrizz()
+    public static IRizzDAL GetRizzDal()
     {
         return new RizzDAL();
+    }
+
+    public static IUserDAL GetUserDal()
+    {
+        return new UserDAL();
     }
 }

@@ -1,6 +1,9 @@
 using DTO;
 using Microsoft.AspNetCore.Mvc;
 using Logic;
+using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
+
 namespace quotes_backend.Controllers;
 
 [ApiController]
@@ -13,6 +16,23 @@ public class RizzController : ControllerBase
     {
         _RizzCollection = new RizzCollection();
     }
+    [SwaggerOperation(
+        Summary = "Gets random Rizz (if there are any)"
+    )]
+    [HttpGet]
+    [Route("/Rizzes/Random")]
+    public IActionResult GetRandom()
+    {
+        string? rizz = _RizzCollection.GetRandomRizz();
+        if (rizz is not null)
+        {
+            return Ok(rizz);
+        }
+        return NoContent();
+    }
+    [SwaggerOperation(
+        Summary = "Gets all Rizz"
+    )]
     [HttpGet]
     [Route("/Rizzes")]
     public IActionResult GetAllRizz()
@@ -26,20 +46,13 @@ public class RizzController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet]
-    [Route("/Rizzes/Random")]
-    public IActionResult GetRandom()
-    {
-        string? rizz = _RizzCollection.GetRandomRizz();
-        if (rizz is not null)
-        {
-            return Ok(rizz);
-        }
-        return NoContent();
-    }
-
+    
+    [SwaggerOperation(
+        Summary = "Adds a new Rizz",
+        Description = "Requires AUTH"
+    )]
     [HttpPost]
-    [Route("/Rizzes")]
+    [Route("/Rizzes"), Authorize]
     public IActionResult NewRizz([FromBody] QuoteDTOPost rizzpost)
     {
         bool created= _RizzCollection.NewRizz(rizzpost);
@@ -50,9 +63,12 @@ public class RizzController : ControllerBase
 
         return BadRequest(created);
     }
-
+    [SwaggerOperation(
+        Summary = "Edits a Rizz",
+        Description = "Requires AUTH"
+    )]
     [HttpPut]
-    [Route("/Rizzes/{id}")]
+    [Route("/Rizzes/{id}"), Authorize]
     public IActionResult UpdateRizz(string id, [FromBody] Quote rizz)
     {
         bool updated = _RizzCollection.UpdateRizz(id, rizz);

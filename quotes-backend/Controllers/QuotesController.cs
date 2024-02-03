@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using DTO;
 using Microsoft.AspNetCore.Mvc;
 using Logic;
-namespace quotes_backend.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
 
+namespace quotes_backend.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class QuotesController : ControllerBase
@@ -13,7 +15,9 @@ public class QuotesController : ControllerBase
     {
         _quoteCollection = new QuoteCollection();
     }
-    
+    [SwaggerOperation(
+        Summary = "Gets random Quote"
+    )]
     [HttpGet]
     [Route("Random")]
     public IActionResult GetRandom()
@@ -25,14 +29,21 @@ public class QuotesController : ControllerBase
         }
         return Ok(quote);
     }
-
+    [SwaggerOperation(
+        Summary = "Gets all quotes from database"
+    )]
     [HttpGet]
+    [Route("/Quotes")]
     public List<Quote> AllQuotes()
     {
         List<Quote> allquotes = _quoteCollection.GetAllQuotes();
         return allquotes;
     }
-    [HttpPost(Name = "NewQuote")]
+    [SwaggerOperation(
+        Summary = "Adds a new Quote",
+        Description = "Requires AUTH"
+    )]
+    [HttpPost(Name = "NewQuote"), Authorize]
     public IActionResult NewQuote([FromBody] QuoteDTOPost quote)
     {
         _quoteCollection = new QuoteCollection();
@@ -44,18 +55,24 @@ public class QuotesController : ControllerBase
         }
         return BadRequest(created);
     }
-
+    [SwaggerOperation(
+        Summary = "Edits a quote",
+        Description = "Requires AUTH"
+    )]
     [HttpPut]
-    [Route("{id}")]
+    [Route("{id}"), Authorize]
     public IActionResult Update(string id, [FromBody] Quote quote)
     {
         _quoteCollection.Quotes.Add(quote);
         bool updated = _quoteCollection.UpdateQuote(id, quote);
         return Ok();
     }
-
+    [SwaggerOperation(
+        Summary = "Deletes a Quote",
+        Description = "Requires AUTH"
+    )]
     [HttpDelete]
-    [Route("{id}")]
+    [Route("{id}"),Authorize]
     public IActionResult Delete(string id)
     {
         bool deleted = _quoteCollection.DeleteQuote(id);

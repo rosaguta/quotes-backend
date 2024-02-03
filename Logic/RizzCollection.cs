@@ -15,7 +15,7 @@ public class RizzCollection
     public RizzCollection()
     {
         Rizzes = new List<Quote>();
-        _rizzInterface = DalFactory.Getrizz();
+        _rizzInterface = DalFactory.GetRizzDal();
         _random = new Random();
     }
     public List<Quote>? GetAllRizz()

@@ -17,7 +17,7 @@ public class QuoteCollection
     public QuoteCollection()
     {
         Quotes = new List<Quote>();
-        _QuoteInterface = DalFactory.Get();
+        _QuoteInterface = DalFactory.GetQuoteDal();
         _random = new Random();
     }
     public string? GetRandomQuote()
