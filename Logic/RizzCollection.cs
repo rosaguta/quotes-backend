@@ -60,6 +60,12 @@ public class RizzCollection
         bool updated = _rizzInterface.UpdateRizz(id, quoteDto);
         return updated;
     }
+
+    public bool DeleteRizz(string id)
+    {
+        return _rizzInterface.DeleteRizz(id);
+    }
+    
     private int GetLenghtOfDB()
     {
         int len = _rizzInterface.GetAllRizz().Count;

@@ -107,6 +107,14 @@ public class RizzDAL : IRizzDAL
 
         return false;
     }
+
+    public bool DeleteRizz(string id)
+    {
+        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
+        var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
+        var result = collection.DeleteOne(filter);
+        return result.DeletedCount > 0;
+    }
     
     private string? GetConnectionString()
     {

@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
                 User u = new UserCollection().GetUser(user.Username);
                 var claims = new List<Claim>
                 {
-                    new Claim("uid", u.Username)
+                    new("uid", u.Username)
                     // You can add more claims if needed, e.g., new Claim(ClaimTypes.Name, u.Username)
                 };
                 var secretKey = new SymmetricSecurityKey
@@ -37,9 +37,11 @@ public class AuthController : ControllerBase
                 var signinCredentials = new SigningCredentials
                 (secretKey, SecurityAlgorithms.HmacSha256);
                 var jwtSecurityToken = new JwtSecurityToken(
+                    issuer: "DigitalIndividuals",
+                    audience: "http://localhost:8080",
                     claims: claims,
-                    expires: DateTime.Now.AddHours(10)
-                    // signingCredentials: signinCredentials
+                    expires: DateTime.Now.AddHours(10),
+                    signingCredentials: signinCredentials
                 );
                 return Ok(new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken));
             }

@@ -9,4 +9,5 @@ public interface IRizzDAL
     List<QuoteDTO> GetAllRizz();
     int CountDocuments();
     bool UpdateRizz(string id, QuoteDTO quoteDto);
+    bool DeleteRizz(string id);
 }

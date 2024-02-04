@@ -22,7 +22,7 @@ public class UserDAL : IUserDAL
         if (result != null)
         {
             // The document with the specified username was found
-            Console.WriteLine(result.ToJson());
+            // Console.WriteLine(result.ToJson());
             return new UserDTO
             {
                 Username = result["Username"].ToString(),

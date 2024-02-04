@@ -80,4 +80,18 @@ public class RizzController : ControllerBase
         return BadRequest(updated);
     }
 
+    [HttpDelete]
+    [Route("/Rizzes/{id}")]
+    [SwaggerOperation(Summary = "Deletes a single rizz", Description = "Requires AUTH")]
+    public IActionResult DeleteRizz(string id)
+    {
+        bool deleted = _RizzCollection.DeleteRizz(id);
+        if (deleted)
+        {
+            return Ok();
+        }
+
+        return BadRequest();
+    }
+
 }
