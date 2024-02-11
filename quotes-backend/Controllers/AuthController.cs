@@ -29,7 +29,8 @@ public class AuthController : ControllerBase
                 User u = new UserCollection().GetUser(user.Username);
                 var claims = new List<Claim>
                 {
-                    new("uid", u.Username)
+                    new("uid", u.Username),
+                    new("EYO","WHY U DECODE THIS?!?!?!?, THIS IS PERSONAL INFO")
                     // You can add more claims if needed, e.g., new Claim(ClaimTypes.Name, u.Username)
                 };
                 var secretKey = new SymmetricSecurityKey
@@ -38,8 +39,8 @@ public class AuthController : ControllerBase
                 (secretKey, SecurityAlgorithms.HmacSha256);
                 var jwtSecurityToken = new JwtSecurityToken(
                     issuer: "DigitalIndividuals",
-                    audience: "http://localhost:8080",
                     claims: claims,
+                    audience: "@everyone",
                     expires: DateTime.Now.AddHours(10),
                     signingCredentials: signinCredentials
                 );
