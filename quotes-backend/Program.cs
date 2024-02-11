@@ -1,22 +1,22 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.AspNetCore.Annotations;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using Microsoft.Extensions.FileProviders;
-using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Swashbuckle.AspNetCore.Annotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
@@ -46,26 +46,26 @@ builder.Services.AddSwaggerGen(opt =>
         }
     });
 });
-
 builder.Services.AddAuthentication(opt =>
-{
-    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+    {
+        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }
+).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidateIssuer = true,
-        ValidateAudience = false,
+        ValidateAudience = true,
 
         ValidIssuer = "DigitalIndividuals",
+        ValidAudience = "http:localhost:8080",
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("thisisasecretkey@1234567890123456"))
     };
 });
 
-// Add CORS services to the container.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -78,40 +78,26 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.DocumentTitle = "Quotes/Rizz Back(shots)end";
-        c.InjectStylesheet("/Content/css/DIV.css");
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    });
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-}
-
+app.UseDirectoryBrowser();
 app.UseStaticFiles(new StaticFileOptions()
 {
     FileProvider = new PhysicalFileProvider(
         Path.Combine(Directory.GetCurrentDirectory(), "Content")),
     RequestPath = "/Content"
 });
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.DocumentTitle = "Quotes/Rizz Back(shots)end";
+    c.InjectStylesheet("/Content/css/DIV.css");
+});
+
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
-
-// Use CORS middleware with the previously defined policy.
-app.UseCors("AllowAllOrigins");
-
 app.UseAuthorization();
-
+app.UseCors("AllowAllOrigins");
 app.MapControllers();
 
 app.Run();
