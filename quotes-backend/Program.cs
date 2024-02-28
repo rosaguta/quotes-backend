@@ -69,9 +69,9 @@ builder.Services.AddAuthentication(opt =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
-        builder =>
+        a =>
         {
-            builder.AllowAnyOrigin()
+            a.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
@@ -80,21 +80,15 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+app.UseDeveloperExceptionPage();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.DocumentTitle = "Quotes/Rizz Back(shots)end";
-        c.InjectStylesheet("/Content/css/DIV.css");
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    });
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-}
+    c.DocumentTitle = "Quotes/Rizz Back(shots)end";
+    c.InjectStylesheet("/Content/css/DIV.css");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "There is no other version why even bother clicking here");
+});
 
 app.UseStaticFiles(new StaticFileOptions()
 {

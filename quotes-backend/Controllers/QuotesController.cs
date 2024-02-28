@@ -65,7 +65,13 @@ public class QuotesController : ControllerBase
     {
         _quoteCollection.Quotes.Add(quote);
         bool updated = _quoteCollection.UpdateQuote(id, quote);
-        return Ok();
+        if (updated)
+        {
+            return Ok();
+        }
+
+        return BadRequest();
+
     }
     [SwaggerOperation(
         Summary = "Deletes a Quote",

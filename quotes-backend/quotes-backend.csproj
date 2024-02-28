@@ -29,7 +29,9 @@
     </ItemGroup>
     
     <ItemGroup>
-        <Resource Include="Content\css\DIV.css" />
+        <EmbeddedResource Include="Content\css\DIV.css">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </EmbeddedResource>
         <Resource Include="wwwroot\css\DIV.css" />
     </ItemGroup>
     

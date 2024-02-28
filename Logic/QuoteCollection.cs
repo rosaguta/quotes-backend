@@ -46,6 +46,7 @@ public class QuoteCollection
             Quotes.Add(quoteDto.ConvertToLogic());
         }
 
+        
         return Quotes;
     }
     public bool UpdateQuote(string id, Quote quote)
