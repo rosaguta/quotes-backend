@@ -6,7 +6,7 @@ public interface IQuoteDAL
 {
     QuoteDTO? GetRandomQuote(int randomint);
     bool NewQuote(QuoteDTOPost QuoteDTO);
-    List<QuoteDTO> GetAllQuotes();
+    List<QuoteDTO> GetAllQuotes(bool HasRights);
     int CountDocuments();
     bool UpdateQuote(string id, QuoteDTO quoteDto);
     bool DeleteQuote(string id);

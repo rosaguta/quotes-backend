@@ -38,9 +38,9 @@ public class QuoteCollection
         bool created =_QuoteInterface.NewQuote(quote);
         return created;
     }
-    public List<Quote> GetAllQuotes()
+    public List<Quote> GetAllQuotes(bool HasRights)
     {
-        List<QuoteDTO> allDTOquotes = _QuoteInterface.GetAllQuotes();
+        List<QuoteDTO> allDTOquotes = _QuoteInterface.GetAllQuotes(HasRights);
         foreach (QuoteDTO quoteDto in allDTOquotes)
         {
             Quotes.Add(quoteDto.ConvertToLogic());
@@ -62,7 +62,7 @@ public class QuoteCollection
     }
     private int GetLenghtOfDB()
     {
-        int len = _QuoteInterface.GetAllQuotes().Count;
+        int len = _QuoteInterface.GetAllQuotes(false).Count;
         return len;
     }
 }

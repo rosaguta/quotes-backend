@@ -16,6 +16,7 @@ public static class QuoteMapper
             id = quoteDto.id,
             text = quoteDto.text,
             person = quoteDto.person,
+            Context = quoteDto.Context,
             DateTimeCreated = quoteDto.DateTimeCreated
         };
     }
@@ -32,6 +33,7 @@ public static class QuoteMapper
             id = quote.id,
             text = quote.text,
             person = quote.person,
+            Context = quote.Context,
             DateTimeCreated = quote.DateTimeCreated
         };
     }

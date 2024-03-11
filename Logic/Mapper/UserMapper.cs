@@ -9,7 +9,8 @@ public static class UserMapper
         return new User()
         {
             Username = userDto.Username,
-            Password = userDto.Password
+            Password = userDto.Password,
+            Rights = userDto.Rights
         };
     }
 
@@ -18,7 +19,8 @@ public static class UserMapper
         return new UserDTO()
         {
             Username = user.Username,
-            Password = user.Password
+            Password = user.Password,
+            Rights = user.Rights
         };
     }
 }

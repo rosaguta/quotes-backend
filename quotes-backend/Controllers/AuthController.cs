@@ -8,50 +8,66 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace quotes_backend.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class AuthController : ControllerBase
+namespace quotes_backend.Controllers
 {
-    [SwaggerOperation(
-        Summary = "Generates a JWT token"
-    )]
-    [HttpPost]
-    [Route("/Auth")]
-    public IActionResult Auth([FromBody] User user)
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : ControllerBase
     {
-        try
+        [SwaggerOperation(
+            Summary = "Generates a JWT token"
+        )]
+        [HttpPost]
+        [Route("/Auth")]
+        public IActionResult Auth([FromBody] User user)
         {
-            bool pwcorrect = user.CheckPassword();
-            if (pwcorrect)
+            try
             {
-                User u = new UserCollection().GetUser(user.Username);
-                var claims = new List<Claim>
+                // Authenticate user credentials
+                bool isUserValid = user.CheckPassword();
+
+                if (isUserValid)
                 {
-                    new("uid", u.Username),
-                    new("EYO","WHY U DECODE THIS?!?!?!?, THIS IS PERSONAL INFO")
-                    // You can add more claims if needed, e.g., new Claim(ClaimTypes.Name, u.Username)
-                };
-                var secretKey = new SymmetricSecurityKey
-                (Encoding.UTF8.GetBytes("thisisasecretkey@1234567890123456"));
-                var signinCredentials = new SigningCredentials
-                (secretKey, SecurityAlgorithms.HmacSha256);
-                var jwtSecurityToken = new JwtSecurityToken(
-                    issuer: "DigitalIndividuals",
-                    claims: claims,
-                    audience: "@everyone",
-                    expires: DateTime.Now.AddHours(10),
-                    signingCredentials: signinCredentials
-                );
-                return Ok(new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken));
+                    // Get user details from database
+                    User u = new UserCollection().GetUser(user.Username);
+
+                    // Create claims for the JWT token
+                    var claims = new List<Claim>
+                    {
+                        new Claim("uid", u.Username),
+                        // Add additional claims as needed
+                        new Claim("Rights", u.Rights.ToString()) // Assuming "Rights" is a claim that determines user rights
+                    };
+
+                    // Create symmetric security key
+                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("thisisasecretkey@1234567890123456"));
+
+                    // Create signing credentials using the secret key
+                    var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+
+                    // Create JWT security token
+                    var jwtSecurityToken = new JwtSecurityToken(
+                        issuer: "DigitalIndividuals",
+                        audience: "@everyone",
+                        claims: claims,
+                        expires: DateTime.Now.AddHours(10),
+                        signingCredentials: signinCredentials
+                    );
+
+                    // Generate and return JWT token
+                    var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+                    return Ok(token);
+                }
+
+                // Unauthorized if user credentials are not valid
+                return Unauthorized();
             }
-
-            return Unauthorized();
-        }catch
-        {
-            return Unauthorized();
+            catch (Exception ex)
+            {
+                // Log any exceptions and return Unauthorized
+                Console.WriteLine($"Error: {ex.Message}");
+                return Unauthorized();
+            }
         }
-}
-
+    }
 }

@@ -26,7 +26,8 @@ public class UserDAL : IUserDAL
             return new UserDTO
             {
                 Username = result["Username"].ToString(),
-                Password = result["Password"].ToString()
+                Password = result["Password"].ToString(),
+                Rights = result["Rights"].ToBoolean()
             };
         }
         else

@@ -36,7 +36,13 @@ public class QuotesController : ControllerBase
     [Route("/Quotes")]
     public List<Quote> AllQuotes()
     {
-        List<Quote> allquotes = _quoteCollection.GetAllQuotes();
+        List<Quote> allquotes = new List<Quote>();
+        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+        {
+            allquotes = _quoteCollection.GetAllQuotes(true);
+        }else{
+            allquotes = _quoteCollection.GetAllQuotes(false);
+        }
         return allquotes;
     }
     [SwaggerOperation(

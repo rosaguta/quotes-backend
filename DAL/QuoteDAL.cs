@@ -33,12 +33,13 @@ public class QuoteDAL : IQuoteDAL
         {
             string dateTimeString = doc["DateTimeCreated"].ToString();
             DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
-
+           
             return new QuoteDTO
             {
                 text = doc["Text"].ToString(),
                 person = doc["Person"].ToString(),
-                DateTimeCreated = dateTimeCreated
+                DateTimeCreated = dateTimeCreated,
+                Context = null
             };
         }
         catch
@@ -67,7 +68,7 @@ public class QuoteDAL : IQuoteDAL
         return true;
     }
 
-    public List<QuoteDTO> GetAllQuotes()
+    public List<QuoteDTO> GetAllQuotes(bool HasRights)
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
         var filter = Builders<BsonDocument>.Filter.Empty;
@@ -77,11 +78,21 @@ public class QuoteDAL : IQuoteDAL
         {
             string dateTimeString = doc["DateTimeCreated"].ToString();
             DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
+            string? context = null;
+            if(HasRights){
+                try
+                {
+                    context = doc["Context"].ToString();
+                }
+                catch
+                {
+                }
+            }
             try
             {
                 quoteDtos.Add(new QuoteDTO
                 {
-                    id = doc["_id"].ToString() ,text = doc["Text"].ToString(), person = doc["Person"].ToString(), DateTimeCreated = dateTimeCreated
+                    id = doc["_id"].ToString() ,text = doc["Text"].ToString(), person = doc["Person"].ToString(), DateTimeCreated = dateTimeCreated, Context = context
                 });
             }
             catch
