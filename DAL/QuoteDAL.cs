@@ -86,10 +86,12 @@ public class QuoteDAL : IQuoteDAL
                 }
                 catch
                 {
+                    
                 }
             }
             try
             {
+                
                 quoteDtos.Add(new QuoteDTO
                 {
                     id = doc["_id"].ToString() ,text = doc["Text"].ToString(), person = doc["Person"].ToString(), DateTimeCreated = dateTimeCreated, Context = context

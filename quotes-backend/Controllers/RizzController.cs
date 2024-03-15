@@ -37,7 +37,16 @@ public class RizzController : ControllerBase
     [Route("/Rizzes")]
     public IActionResult GetAllRizz()
     {
-        List<Quote>? rizzes = _RizzCollection.GetAllRizz();
+        List<Quote>? rizzes = new List<Quote>();
+        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+        {
+            rizzes = _RizzCollection.GetAllRizz(true);    
+        }
+        else
+        {
+            rizzes = _RizzCollection.GetAllRizz(false);
+        }
+        
         if (rizzes[0] is not null)
         {
             return Ok(rizzes);

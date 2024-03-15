@@ -39,7 +39,7 @@ public class RizzDAL : IRizzDAL
         return true;
     }
 
-    public List<QuoteDTO> GetAllRizz()
+    public List<QuoteDTO> GetAllRizz(bool HasRights)
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
         var filter = Builders<BsonDocument>.Filter.Empty;
@@ -49,11 +49,22 @@ public class RizzDAL : IRizzDAL
         {
             string dateTimeString = doc["DateTimeCreated"].ToString();
             DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
+            string? context = null;
+            if(HasRights){
+                try
+                {
+                    context = doc["Context"].ToString();
+                }
+                catch
+                {
+                    
+                }
+            }
             try
             {
                 quoteDtos.Add(new QuoteDTO
                 {
-                    id = doc["_id"].ToString() ,text = doc["Text"].ToString(), person = doc["Person"].ToString(), DateTimeCreated = dateTimeCreated
+                    id = doc["_id"].ToString() ,text = doc["Text"].ToString(), person = doc["Person"].ToString(), DateTimeCreated = dateTimeCreated, Context = context
                 });
             }
             catch

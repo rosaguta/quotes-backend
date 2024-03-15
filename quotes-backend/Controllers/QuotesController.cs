@@ -52,8 +52,7 @@ public class QuotesController : ControllerBase
     [HttpPost(Name = "NewQuote"), Authorize]
     public IActionResult NewQuote([FromBody] QuoteDTOPost quote)
     {
-        _quoteCollection = new QuoteCollection();
-        
+       
         bool created = _quoteCollection.NewQuote(quote);
         if (created)
         {
