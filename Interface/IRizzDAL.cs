@@ -6,7 +6,7 @@ public interface IRizzDAL
 {
     QuoteDTO? GetRandomRizz(int randomint);
     bool NewRizz(QuoteDTOPost QuoteDTO);
-    List<QuoteDTO> GetAllRizz();
+    List<QuoteDTO> GetAllRizz(bool HasRights);
     int CountDocuments();
     bool UpdateRizz(string id, QuoteDTO quoteDto);
     bool DeleteRizz(string id);

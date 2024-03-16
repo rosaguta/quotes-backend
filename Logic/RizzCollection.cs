@@ -18,9 +18,9 @@ public class RizzCollection
         _rizzInterface = DalFactory.GetRizzDal();
         _random = new Random();
     }
-    public List<Quote>? GetAllRizz()
+    public List<Quote>? GetAllRizz(bool HasRights)
     {
-        List<QuoteDTO> RizzDtos = _rizzInterface.GetAllRizz();
+        List<QuoteDTO> RizzDtos = _rizzInterface.GetAllRizz(HasRights);
         foreach (QuoteDTO rizzdto in RizzDtos)
         {
             Rizzes.Add(rizzdto.ConvertToLogic()); 
@@ -68,7 +68,7 @@ public class RizzCollection
     
     private int GetLenghtOfDB()
     {
-        int len = _rizzInterface.GetAllRizz().Count;
+        int len = _rizzInterface.GetAllRizz(false).Count;
         return len;
     }
 }
