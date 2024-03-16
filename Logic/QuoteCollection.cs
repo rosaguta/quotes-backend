@@ -49,10 +49,10 @@ public class QuoteCollection
         
         return Quotes;
     }
-    public bool UpdateQuote(string id, Quote quote)
+    public bool UpdateQuote(string id, Quote quote, bool HasRights)
     {
         QuoteDTO quoteDto = quote.ConvertToDTO();
-        bool updated = _QuoteInterface.UpdateQuote(id, quoteDto);
+        bool updated = _QuoteInterface.UpdateQuote(id, quoteDto, HasRights);
         return updated;
     }
 

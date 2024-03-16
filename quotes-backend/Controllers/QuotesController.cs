@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Claims;
 using DTO;
 using Microsoft.AspNetCore.Mvc;
 using Logic;
@@ -69,8 +70,14 @@ public class QuotesController : ControllerBase
     [Route("{id}"), Authorize]
     public IActionResult Update(string id, [FromBody] Quote quote)
     {
-        _quoteCollection.Quotes.Add(quote);
-        bool updated = _quoteCollection.UpdateQuote(id, quote);
+        bool updated = false;
+        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+        { 
+            updated = _quoteCollection.UpdateQuote(id, quote, true);
+        }else{
+            updated = _quoteCollection.UpdateQuote(id, quote, false);
+        }
+        
         if (updated)
         {
             return Ok();
@@ -95,5 +102,4 @@ public class QuotesController : ControllerBase
 
         return BadRequest();
     }
-    
 }

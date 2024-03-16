@@ -8,6 +8,6 @@ public interface IQuoteDAL
     bool NewQuote(QuoteDTOPost QuoteDTO);
     List<QuoteDTO> GetAllQuotes(bool HasRights);
     int CountDocuments();
-    bool UpdateQuote(string id, QuoteDTO quoteDto);
+    bool UpdateQuote(string id, QuoteDTO quoteDto, bool HasRights);
     bool DeleteQuote(string id);
 }

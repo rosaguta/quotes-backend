@@ -116,20 +116,34 @@ public class QuoteDAL : IQuoteDAL
         return totalCountInt;
     }
 
-    public bool UpdateQuote(string id, QuoteDTO quoteDto)
+    public bool UpdateQuote(string id, QuoteDTO quoteDto, bool HasRights)
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
         var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
-        var update = Builders<BsonDocument>.Update
-            .Set("Text", quoteDto.text)
-            .Set("Person", quoteDto.person)
-            .Set("DateTimeCreated", quoteDto.DateTimeCreated);
-        var result = collection.UpdateOne(filter, update);
-        if (result.IsAcknowledged && result.ModifiedCount > 0)
-        {
-            return true;
+        if(!HasRights){
+            var update = Builders<BsonDocument>.Update
+                .Set("Text", quoteDto.text)
+                .Set("Person", quoteDto.person)
+                .Set("DateTimeCreated", quoteDto.DateTimeCreated);
+                var result = collection.UpdateOne(filter, update);
+                if (result.IsAcknowledged && result.ModifiedCount > 0)
+                {
+                    return true;
+                }
         }
-
+        else
+        {
+            var update = Builders<BsonDocument>.Update
+                .Set("Text", quoteDto.text)
+                .Set("Person", quoteDto.person)
+                .Set("DateTimeCreated", quoteDto.DateTimeCreated)
+                .Set("Context", quoteDto.Context);
+            var result = collection.UpdateOne(filter, update);
+            if (result.IsAcknowledged && result.ModifiedCount > 0)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
