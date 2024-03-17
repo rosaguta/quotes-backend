@@ -50,7 +50,7 @@ namespace quotes_backend.Controllers
                         issuer: "DigitalIndividuals",
                         audience: "@everyone",
                         claims: claims,
-                        expires: DateTime.Now.AddHours(10),
+                        expires: DateTime.Now.AddHours(2),
                         signingCredentials: signinCredentials
                     );
 

@@ -57,9 +57,9 @@ public class QuotesController : ControllerBase
         bool created = _quoteCollection.NewQuote(quote);
         if (created)
         {
-            return Ok(created);
+            return Ok();
         }
-        return BadRequest(created);
+        return BadRequest();
     }
     [SwaggerOperation(
         Summary = "Edits a quote",
