@@ -72,7 +72,8 @@ public class QuoteDAL : IQuoteDAL
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
         var filter = Builders<BsonDocument>.Filter.Empty;
-        var documents = collection.Find(filter).ToList();
+        var sortDefinition = Builders<BsonDocument>.Sort.Ascending("DateTimeCreated");
+        var documents = collection.Find(filter).Sort(sortDefinition).ToList();
         List<QuoteDTO> quoteDtos = new List<QuoteDTO>();
         foreach(var doc in documents)
         {
