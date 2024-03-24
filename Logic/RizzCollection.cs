@@ -10,13 +10,11 @@ public class RizzCollection
     public List<Quote>? Rizzes { get; set; }
 
     IRizzDAL _rizzInterface;
-    Random _random;
-
+    private static readonly Random _random = new Random();
     public RizzCollection()
     {
         Rizzes = new List<Quote>();
         _rizzInterface = DalFactory.GetRizzDal();
-        _random = new Random();
     }
     public List<Quote>? GetAllRizz(bool HasRights)
     {

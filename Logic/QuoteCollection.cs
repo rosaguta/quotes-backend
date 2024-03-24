@@ -11,15 +11,15 @@ public class QuoteCollection
 {
     public List<Quote> Quotes { get; set; }
     
-    IQuoteDAL _QuoteInterface;
-    Random _random;
+    readonly IQuoteDAL _QuoteInterface;
+    private static readonly Random _random = new Random();
 
     public QuoteCollection()
     {
         Quotes = new List<Quote>();
         _QuoteInterface = DalFactory.GetQuoteDal();
-        _random = new Random();
     }
+
     public string? GetRandomQuote()
     {
         int lenghtofdb = GetLenghtOfDB();
