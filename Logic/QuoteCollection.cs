@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using DTO;
 using Interface;
@@ -15,7 +16,7 @@ public class QuoteCollection
     
     readonly IQuoteDAL _QuoteInterface;
     private static readonly Random _random = new Random();
-    private static int _NotBenjiCount = 0;
+    private static Quote _LastQuote = new Quote(){Context = "",DateTimeCreated = new DateTime(), person = "", text = ""};
 
     public QuoteCollection()
     {
@@ -27,48 +28,41 @@ public class QuoteCollection
     {
         int lengthOfDB = GetLenghtOfDB();
         int randomInt = _random.Next(0, lengthOfDB);
-    
-        QuoteDTO? quoteDto = _QuoteInterface.GetRandomQuote(randomInt);
-        if (quoteDto is null)
+        QuoteDTO? quoteDto;
+        Quote quote;
+        var comp = StringComparison.OrdinalIgnoreCase;
+
+        do
         {
-            return null;
-        }
-    
-        Quote quote = quoteDto.ConvertToLogic();
-    
-        
-        if (BenjiCheck(quote) && _NotBenjiCount < 5)
-        {
-            _NotBenjiCount++;
-            Try_ResetCount();
-            return GetRandomQuote();
-        }
-    
+            quoteDto = _QuoteInterface.GetRandomQuote(randomInt);
+            if (quoteDto is null)
+            {
+                return null;
+            }
+
+            quote = quoteDto.ConvertToLogic();
+
+            if (_LastQuote.person.Contains("benj", comp))
+            {
+                if (quote.person.Contains("benj", comp))
+                {
+                    // If both the current and last quote contain "benj", fetch a new random quote.
+                    randomInt = _random.Next(0, lengthOfDB);
+                    continue;
+                }
+            }
+
+            // If the condition is met (either the last quote didn't contain "benj" or the current one doesn't), exit the loop.
+            break;
+
+        } while (true);
+
+        _LastQuote = quote;
         return quote.ToString();
     }
 
 
-    private bool BenjiCheck(Quote q)
-    {
-        var comp = StringComparison.OrdinalIgnoreCase;
-        if (q.person.Contains("benj", comp))
-        {
-            Console.WriteLine("true");
-            return true;
-        }
-        else
-        {
-            Console.WriteLine("false");
-            return false;
-        }
-    }
-
-    private void Try_ResetCount()
-    {
-        if(_NotBenjiCount >= 5){
-            _NotBenjiCount = 0;
-        }
-    }
+   
     public bool NewQuote(QuoteDTOPost quote)
     {
         bool created =_QuoteInterface.NewQuote(quote);
