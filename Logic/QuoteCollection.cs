@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 using DTO;
 using Interface;
 using Factory;
@@ -13,6 +15,7 @@ public class QuoteCollection
     
     readonly IQuoteDAL _QuoteInterface;
     private static readonly Random _random = new Random();
+    private static int _NotBenjiCount = 0;
 
     public QuoteCollection()
     {
@@ -22,16 +25,49 @@ public class QuoteCollection
 
     public string? GetRandomQuote()
     {
-        int lenghtofdb = GetLenghtOfDB();
-        int randomint = _random.Next(0, lenghtofdb);
-        
-        QuoteDTO? quoteDto = _QuoteInterface.GetRandomQuote(randomint);
+        int lengthOfDB = GetLenghtOfDB();
+        int randomInt = _random.Next(0, lengthOfDB);
+    
+        QuoteDTO? quoteDto = _QuoteInterface.GetRandomQuote(randomInt);
         if (quoteDto is null)
         {
             return null;
         }
+    
         Quote quote = quoteDto.ConvertToLogic();
+    
+        
+        if (BenjiCheck(quote) && _NotBenjiCount < 5)
+        {
+            _NotBenjiCount++;
+            Try_ResetCount();
+            return GetRandomQuote();
+        }
+    
         return quote.ToString();
+    }
+
+
+    private bool BenjiCheck(Quote q)
+    {
+        var comp = StringComparison.OrdinalIgnoreCase;
+        if (q.person.Contains("benj", comp))
+        {
+            Console.WriteLine("true");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("false");
+            return false;
+        }
+    }
+
+    private void Try_ResetCount()
+    {
+        if(_NotBenjiCount >= 5){
+            _NotBenjiCount = 0;
+        }
     }
     public bool NewQuote(QuoteDTOPost quote)
     {
