@@ -31,7 +31,6 @@ public class QuoteCollection
         QuoteDTO? quoteDto;
         Quote quote;
         var comp = StringComparison.OrdinalIgnoreCase;
-
         do
         {
             quoteDto = _QuoteInterface.GetRandomQuote(randomInt);
@@ -39,24 +38,17 @@ public class QuoteCollection
             {
                 return null;
             }
-
             quote = quoteDto.ConvertToLogic();
-
             if (_LastQuote.person.Contains("benj", comp))
             {
                 if (quote.person.Contains("benj", comp))
                 {
-                    // If both the current and last quote contain "benj", fetch a new random quote.
                     randomInt = _random.Next(0, lengthOfDB);
                     continue;
                 }
             }
-
-            // If the condition is met (either the last quote didn't contain "benj" or the current one doesn't), exit the loop.
             break;
-
         } while (true);
-
         _LastQuote = quote;
         return quote.ToString();
     }
