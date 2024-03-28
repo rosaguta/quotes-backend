@@ -18,4 +18,9 @@ public static class DalFactory
     {
         return new UserDAL();
     }
+
+    public static IInsultDAL GetInsultDal()
+    {
+        return new InsultDAL();
+    }
 }
