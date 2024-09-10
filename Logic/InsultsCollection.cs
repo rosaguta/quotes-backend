@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using DTO;
 using Factory;
 using Interface;
@@ -8,12 +9,15 @@ namespace Logic;
 public class InsultsCollection
 {
     public List<Quote> Insults { get; set; }
+    private Random _random { get; set; }
+
     readonly IInsultDAL _InsultInterface;
-    private static readonly Random _random = new Random();
     private static Quote _LastQuote = new Quote(){Context = "",DateTimeCreated = new DateTime(), person = "", text = ""};
     
     public InsultsCollection()
     {
+        int seed = RandomNumberGenerator.GetInt32(0, int.MaxValue);
+        _random = new Random(seed);
         Insults = new List<Quote>();
         _InsultInterface = DalFactory.GetInsultDal();
     }

@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using DTO;
 using Interface;
 using Factory;
@@ -8,11 +9,13 @@ namespace Logic;
 public class RizzCollection
 {
     public List<Quote>? Rizzes { get; set; }
+    private Random _random { get; set; }
 
     IRizzDAL _rizzInterface;
-    private static readonly Random _random = new Random();
     public RizzCollection()
     {
+        int seed = RandomNumberGenerator.GetInt32(0, int.MaxValue);
+        _random = new Random(seed);
         Rizzes = new List<Quote>();
         _rizzInterface = DalFactory.GetRizzDal();
     }

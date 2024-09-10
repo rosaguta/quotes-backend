@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using DTO;
 using Interface;
@@ -13,13 +14,14 @@ namespace Logic;
 public class QuoteCollection
 {
     public List<Quote> Quotes { get; set; }
-    
+    private Random _random { get; set; }
     readonly IQuoteDAL _QuoteInterface;
-    private static readonly Random _random = new Random();
     private static Quote _LastQuote = new Quote(){Context = "",DateTimeCreated = new DateTime(), person = "", text = ""};
 
     public QuoteCollection()
     {
+        int seed = RandomNumberGenerator.GetInt32(0, int.MaxValue);
+        _random = new Random(seed);
         Quotes = new List<Quote>();
         _QuoteInterface = DalFactory.GetQuoteDal();
     }
