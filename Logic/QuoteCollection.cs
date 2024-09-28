@@ -12,7 +12,8 @@ namespace Logic;
 
 public class QuoteCollection
 {
-    public List<Quote> Quotes { get; set; }
+    private List<Quote> Quotes { get; set; }
+    private List<Quote> RecentlyRequestedQuotes { get; set; }
     
     readonly IQuoteDAL _QuoteInterface;
     private static readonly Random _random = new Random();
@@ -22,6 +23,7 @@ public class QuoteCollection
     {
         Quotes = new List<Quote>();
         _QuoteInterface = DalFactory.GetQuoteDal();
+        RecentlyRequestedQuotes = new List<Quote>();
     }
 
     public string? GetRandomQuote()
@@ -30,7 +32,7 @@ public class QuoteCollection
         int randomInt = _random.Next(0, lengthOfDB);
         QuoteDTO? quoteDto;
         Quote quote;
-        var comp = StringComparison.OrdinalIgnoreCase;
+        
         do
         {
             quoteDto = _QuoteInterface.GetRandomQuote(randomInt);
@@ -39,22 +41,65 @@ public class QuoteCollection
                 return null;
             }
             quote = quoteDto.ConvertToLogic();
-            if (_LastQuote.person.Contains("benj", comp))
+
+            if (BenjiCheck(quote))
             {
-                if (quote.person.Contains("benj", comp))
-                {
-                    randomInt = _random.Next(0, lengthOfDB);
-                    continue;
-                }
+                randomInt = _random.Next(0, lengthOfDB);
+                continue;
             }
+            
+            if (RecentlyAdded(quote))
+            {
+                randomInt = _random.Next(0, lengthOfDB);
+                continue;
+            }
+            else
+            {
+                
+            }
+            
             break;
         } while (true);
         _LastQuote = quote;
+        RecentlyRequestedQuotes.Add(quote);
         return quote.ToString();
     }
 
+    private bool BenjiCheck(Quote quote)
+    {
+        var comp = StringComparison.OrdinalIgnoreCase;
+        if (_LastQuote.person.Contains("benj", comp))
+        {
+            if (quote.person.Contains("benj", comp))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-   
+    private bool RecentlyAdded(Quote quote)
+    {
+        if (RecentlyRequestedQuotes.Contains(quote))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void AddAndRemoveQuote(Quote quote)
+    {
+        int lenghtoflist = RecentlyRequestedQuotes.Count;
+        if (lenghtoflist == 15)
+        {
+            RecentlyRequestedQuotes.RemoveAt(14);
+        }
+        if (lenghtoflist < 15)
+        {
+            RecentlyRequestedQuotes.Insert(0,quote);
+        }
+    }
     public bool NewQuote(QuoteDTOPost quote)
     {
         bool created =_QuoteInterface.NewQuote(quote);

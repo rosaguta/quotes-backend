@@ -1,17 +1,8 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using Microsoft.Extensions.FileProviders;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +74,7 @@ var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
 app.UseSwagger();
+// app.UseSwaggerThemes(Theme.NordDark);
 app.UseSwaggerUI(c =>
 {
     c.DocumentTitle = "Quotes/Rizz Back(shots)end";

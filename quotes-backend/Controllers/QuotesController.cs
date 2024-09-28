@@ -30,6 +30,7 @@ public class QuotesController : ControllerBase
         }
         return Ok(quote);
     }
+
     [SwaggerOperation(
         Summary = "Gets all quotes from database"
     )]
@@ -41,11 +42,14 @@ public class QuotesController : ControllerBase
         if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
         {
             allquotes = _quoteCollection.GetAllQuotes(true);
-        }else{
+        }
+        else
+        {
             allquotes = _quoteCollection.GetAllQuotes(false);
         }
         return allquotes;
     }
+
     [SwaggerOperation(
         Summary = "Adds a new Quote",
         Description = "Requires AUTH"
