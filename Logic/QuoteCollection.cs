@@ -13,8 +13,7 @@ namespace Logic;
 public class QuoteCollection
 {
     private List<Quote> Quotes { get; set; }
-    private List<Quote> RecentlyRequestedQuotes { get; set; }
-    
+    private static List<string> RecentlyRequestedQuotes = new List<string>();
     readonly IQuoteDAL _QuoteInterface;
     private static readonly Random _random = new Random();
     private static Quote _LastQuote = new Quote(){Context = "",DateTimeCreated = new DateTime(), person = "", text = ""};
@@ -23,7 +22,6 @@ public class QuoteCollection
     {
         Quotes = new List<Quote>();
         _QuoteInterface = DalFactory.GetQuoteDal();
-        RecentlyRequestedQuotes = new List<Quote>();
     }
 
     public string? GetRandomQuote()
@@ -53,15 +51,10 @@ public class QuoteCollection
                 randomInt = _random.Next(0, lengthOfDB);
                 continue;
             }
-            else
-            {
-                
-            }
-            
             break;
         } while (true);
         _LastQuote = quote;
-        RecentlyRequestedQuotes.Add(quote);
+        AddAndRemoveQuote(quote);
         return quote.ToString();
     }
 
@@ -80,7 +73,7 @@ public class QuoteCollection
 
     private bool RecentlyAdded(Quote quote)
     {
-        if (RecentlyRequestedQuotes.Contains(quote))
+        if (RecentlyRequestedQuotes.Contains(quote.ToString()))
         {
             return true;
         }
@@ -97,7 +90,7 @@ public class QuoteCollection
         }
         if (lenghtoflist < 15)
         {
-            RecentlyRequestedQuotes.Insert(0,quote);
+            RecentlyRequestedQuotes.Insert(0,quote.ToString());
         }
     }
     public bool NewQuote(QuoteDTOPost quote)
