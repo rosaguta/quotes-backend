@@ -13,7 +13,8 @@ namespace Logic;
 
 public class QuoteCollection
 {
-    public List<Quote> Quotes { get; set; }
+    private List<Quote> Quotes { get; set; }
+    private static List<string> RecentlyRequestedQuotes = new List<string>();
     private Random _random { get; set; }
     readonly IQuoteDAL _QuoteInterface;
     private static Quote _LastQuote = new Quote(){Context = "",DateTimeCreated = new DateTime(), person = "", text = ""};
@@ -32,7 +33,7 @@ public class QuoteCollection
         int randomInt = _random.Next(0, lengthOfDB);
         QuoteDTO? quoteDto;
         Quote quote;
-        var comp = StringComparison.OrdinalIgnoreCase;
+        
         do
         {
             quoteDto = _QuoteInterface.GetRandomQuote(randomInt);
@@ -41,22 +42,60 @@ public class QuoteCollection
                 return null;
             }
             quote = quoteDto.ConvertToLogic();
-            if (_LastQuote.person.Contains("benj", comp))
+
+            if (BenjiCheck(quote))
             {
-                if (quote.person.Contains("benj", comp))
-                {
-                    randomInt = _random.Next(0, lengthOfDB);
-                    continue;
-                }
+                randomInt = _random.Next(0, lengthOfDB);
+                continue;
+            }
+            
+            if (RecentlyAdded(quote))
+            {
+                randomInt = _random.Next(0, lengthOfDB);
+                continue;
             }
             break;
         } while (true);
         _LastQuote = quote;
+        AddAndRemoveQuote(quote);
         return quote.ToString();
     }
 
+    private bool BenjiCheck(Quote quote)
+    {
+        var comp = StringComparison.OrdinalIgnoreCase;
+        if (_LastQuote.person.Contains("benj", comp))
+        {
+            if (quote.person.Contains("benj", comp))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-   
+    private bool RecentlyAdded(Quote quote)
+    {
+        if (RecentlyRequestedQuotes.Contains(quote.ToString()))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void AddAndRemoveQuote(Quote quote)
+    {
+        int lenghtoflist = RecentlyRequestedQuotes.Count;
+        if (lenghtoflist == 15)
+        {
+            RecentlyRequestedQuotes.RemoveAt(14);
+        }
+        if (lenghtoflist < 15)
+        {
+            RecentlyRequestedQuotes.Insert(0,quote.ToString());
+        }
+    }
     public bool NewQuote(QuoteDTOPost quote)
     {
         bool created =_QuoteInterface.NewQuote(quote);
