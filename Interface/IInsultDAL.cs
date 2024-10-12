@@ -3,7 +3,7 @@ namespace Interface;
 
 public interface IInsultDAL
 {
-    QuoteDTO? GetRandomInsult(int randomint);
+    QuoteDTO? GetRandomInsult(int randomint, bool hasRights);
     bool NewInsult(QuoteDTOPost InsultDTO);
     List<QuoteDTO> GetAllInsults(bool HasRights);
     int CountDocuments();

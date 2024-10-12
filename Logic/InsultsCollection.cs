@@ -22,16 +22,19 @@ public class InsultsCollection
         _InsultInterface = DalFactory.GetInsultDal();
     }
     
-    public string? GetRandomInsult()
+    public string? GetRandomInsult(bool hasRights)
     {
         int lengthOfDB = GetLenghtOfDB();
         int randomInt = _random.Next(0, lengthOfDB);
-            QuoteDTO quoteDto = _InsultInterface.GetRandomInsult(randomInt);
-            if (quoteDto is null)
-            {
-                return null;
-            }
-            Quote quote = quoteDto.ConvertToLogic();
+        QuoteDTO? quoteDto = _InsultInterface.GetRandomInsult(randomInt, hasRights);
+        if (quoteDto is null)
+        {
+            return null;
+        }
+        Quote quote = quoteDto.ConvertToLogic();
+        if(hasRights){
+            return quote.ToStringWithContext();
+        }
 
         return quote.ToString();
     }

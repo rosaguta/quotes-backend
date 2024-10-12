@@ -14,4 +14,13 @@ public class Quote
     {
         return text + " - " + person + " " + DateTimeCreated.ToString("dd/MM/yyyy HH:mm");
     }
+
+    public string ToStringWithContext()
+    {
+        if (Context is null)
+        {
+            Context = "";
+        }
+        return text + " - " + person + " " + DateTimeCreated.ToString("dd/MM/yyyy HH:mm") + " | " + Context;
+    }
 }

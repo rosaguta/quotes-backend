@@ -4,7 +4,7 @@ namespace Interface;
 
 public interface IRizzDAL
 {
-    QuoteDTO? GetRandomRizz(int randomint);
+    QuoteDTO? GetRandomRizz(int randomint, bool withRights);
     bool NewRizz(QuoteDTOPost QuoteDTO);
     List<QuoteDTO> GetAllRizz(bool HasRights);
     int CountDocuments();

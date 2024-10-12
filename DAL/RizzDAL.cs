@@ -79,7 +79,7 @@ public class RizzDAL : IRizzDAL
         return quoteDtos;
     }
 
-    public QuoteDTO? GetRandomRizz(int randomint)
+    public QuoteDTO? GetRandomRizz(int randomint, bool withRights)
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
         var filter = Builders<BsonDocument>.Filter.Empty;
@@ -88,12 +88,20 @@ public class RizzDAL : IRizzDAL
         {
             string dateTimeString = doc["DateTimeCreated"].ToString();
             DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
-
+            string? context = null;
+            if (withRights)
+            {
+                try
+                {
+                    context = doc["Context"].ToString();
+                }catch{}
+            }
             return new QuoteDTO
             {
                 text = doc["Text"].ToString(),
                 person = doc["Person"].ToString(),
-                DateTimeCreated = dateTimeCreated
+                DateTimeCreated = dateTimeCreated,
+                Context = context
             };
         }
         catch
