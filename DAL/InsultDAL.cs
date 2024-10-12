@@ -21,7 +21,7 @@ public class InsultDAL : IInsultDAL
         }
     }   
     
-    public QuoteDTO? GetRandomInsult(int randomint)
+    public QuoteDTO? GetRandomInsult(int randomint, bool hasRights)
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("insults");
         var filter = Builders<BsonDocument>.Filter.Empty;
@@ -30,13 +30,21 @@ public class InsultDAL : IInsultDAL
         {
             string dateTimeString = doc["DateTimeCreated"].ToString();
             DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
-           
+            string? context = null;
+            if (hasRights)
+            {
+                try
+                {
+                    context = doc["Context"].ToString();
+                }
+                catch{}
+            }
             return new QuoteDTO
             {
                 text = doc["Text"].ToString(),
                 person = doc["Person"].ToString(),
                 DateTimeCreated = dateTimeCreated,
-                Context = null
+                Context = context
             };
         }
         catch

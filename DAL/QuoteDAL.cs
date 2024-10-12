@@ -24,7 +24,7 @@ public class QuoteDAL : IQuoteDAL
             throw new Exception("connectionstring is incorrect");
         }
     }   
-    public QuoteDTO GetRandomQuote(int randomint)
+    public QuoteDTO? GetRandomQuote(int randomint, bool hasRights)
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
         var filter = Builders<BsonDocument>.Filter.Empty;
@@ -33,13 +33,21 @@ public class QuoteDAL : IQuoteDAL
         {
             string dateTimeString = doc["DateTimeCreated"].ToString();
             DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
-           
+            string? context = null;
+            if (hasRights)
+            {
+                try
+                {
+                    context = doc["Context"].ToString();
+                }
+                catch{} // there is no context field. ignoring errors
+            }
             return new QuoteDTO
             {
                 text = doc["Text"].ToString(),
                 person = doc["Person"].ToString(),
                 DateTimeCreated = dateTimeCreated,
-                Context = null
+                Context = context
             };
         }
         catch

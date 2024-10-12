@@ -17,14 +17,29 @@ public class QuotesController : ControllerBase
         _quoteCollection = new QuoteCollection();
     }
     [SwaggerOperation(
-        Summary = "Gets random Quote"
+        Summary = "Gets random Quote",
+        Description = "Requires AUTH for retrieving context"
     )]
     [HttpGet]
     [Route("Random")]
-    public IActionResult GetRandom()
+    public IActionResult GetRandom(bool withContext)
     {
-        string? quote = _quoteCollection.GetRandomQuote();
-        if (quote is null)
+        string? quote;
+        if(withContext){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                quote = _quoteCollection.GetRandomQuote(true);
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+        }
+        else
+        {
+            quote = _quoteCollection.GetRandomQuote(false);
+        }
+        if (quote == "" | quote is null)
         {
             return BadRequest("Something went wrong, blame Rose for this issue :3");
         }

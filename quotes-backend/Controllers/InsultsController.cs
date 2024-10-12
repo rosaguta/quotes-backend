@@ -19,18 +19,33 @@ public class InsultsController : ControllerBase
     }
 
     [SwaggerOperation(
-        Summary = "Gets random Insult"
+        Summary = "Gets random Insult",
+        Description = "Requires AUTH for retrieving context"
     )]
     [HttpGet]
     [Route("Random")]
-    public IActionResult GetRandom()
+    public IActionResult GetRandom(bool withContext)
     {
-        string? insult =_insultsCollection.GetRandomInsult();
-        if (insult is null)
+        string? quote;
+        if(withContext){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                quote = _insultsCollection.GetRandomInsult(true);
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+        }
+        else
+        {
+            quote = _insultsCollection.GetRandomInsult(false);
+        }
+        if (quote == "" | quote is null)
         {
             return BadRequest("Something went wrong, blame Rose for this issue :3");
         }
-        return Ok(insult);
+        return Ok(quote);
     }
     
     [SwaggerOperation(

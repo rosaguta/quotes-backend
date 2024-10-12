@@ -32,17 +32,21 @@ public class RizzCollection
         return null;
     }
 
-    public string GetRandomRizz()
+    public string? GetRandomRizz(bool withRights)
     {
         int lenghtofdb = GetLenghtOfDB();
         int randomint = _random.Next(0, lenghtofdb);
         
-        QuoteDTO? rizzDto = _rizzInterface.GetRandomRizz(randomint);
+        QuoteDTO? rizzDto = _rizzInterface.GetRandomRizz(randomint, withRights);
         if (rizzDto is null)
         {
             return null;
         }
         Quote rizz = rizzDto.ConvertToLogic();
+        if(withRights){
+            return rizz.ToStringWithContext();
+        }
+
         return rizz.ToString();
     }
 

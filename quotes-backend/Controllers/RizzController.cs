@@ -17,18 +17,33 @@ public class RizzController : ControllerBase
         _RizzCollection = new RizzCollection();
     }
     [SwaggerOperation(
-        Summary = "Gets random Rizz (if there are any)"
+        Summary = "Gets random Rizz (if there are any)",
+        Description = "Requires AUTH for retrieving context"
     )]
     [HttpGet]
     [Route("/Rizzes/Random")]
-    public IActionResult GetRandom()
+    public IActionResult GetRandom(bool withContext)
     {
-        string? rizz = _RizzCollection.GetRandomRizz();
-        if (rizz is not null)
-        {
-            return Ok(rizz);
+        string? quote;
+        if(withContext){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                quote = _RizzCollection.GetRandomRizz(true);
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
         }
-        return NoContent();
+        else
+        {
+            quote = _RizzCollection.GetRandomRizz(false);
+        }
+        if (quote == "" | quote is null)
+        {
+            return BadRequest("Something went wrong, blame Rose for this issue :3");
+        }
+        return Ok(quote);
     }
     [SwaggerOperation(
         Summary = "Gets all Rizz"

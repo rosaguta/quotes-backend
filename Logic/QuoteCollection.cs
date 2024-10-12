@@ -24,7 +24,7 @@ public class QuoteCollection
         _QuoteInterface = DalFactory.GetQuoteDal();
     }
 
-    public string? GetRandomQuote()
+    public string? GetRandomQuote(bool hasRights)
     {
         int lengthOfDB = GetLenghtOfDB();
         int randomInt = _random.Next(0, lengthOfDB);
@@ -33,7 +33,8 @@ public class QuoteCollection
         
         do
         {
-            quoteDto = _QuoteInterface.GetRandomQuote(randomInt);
+            quoteDto = _QuoteInterface.GetRandomQuote(randomInt, hasRights);
+            
             if (quoteDto is null)
             {
                 return null;
@@ -55,6 +56,10 @@ public class QuoteCollection
         } while (true);
         _LastQuote = quote;
         AddAndRemoveQuote(quote);
+        if(hasRights){
+            return quote.ToStringWithContext();
+        }
+
         return quote.ToString();
     }
 
