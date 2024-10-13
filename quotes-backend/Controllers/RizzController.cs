@@ -66,7 +66,14 @@ public class RizzController : ControllerBase
         }
         else
         {
-            allRizz = _RizzCollection.GetAllRizz(false);
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allRizz = _RizzCollection.GetAllRizz(true);
+            }
+            else
+            {
+                allRizz = _RizzCollection.GetAllRizz(false);
+            }
         }
         if(allRizz != null && allRizz.Count != 0){
             return Ok(allRizz);

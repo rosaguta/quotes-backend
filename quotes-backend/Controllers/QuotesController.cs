@@ -68,7 +68,14 @@ public class QuotesController : ControllerBase
         }
         else
         {
-            allquotes = _quoteCollection.GetAllQuotes(false);
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allquotes = _quoteCollection.GetAllQuotes(true);
+            }
+            else
+            {
+                allquotes = _quoteCollection.GetAllQuotes(false);
+            }
         }
         if(allquotes.Count != 0){
             return Ok(allquotes);

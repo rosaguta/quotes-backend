@@ -69,7 +69,14 @@ public class InsultsController : ControllerBase
         }
         else
         {
-            allInsults = _insultsCollection.GetAllInsults(false);
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allInsults = _insultsCollection.GetAllInsults(true);
+            }
+            else
+            {
+                allInsults = _insultsCollection.GetAllInsults(true);
+            }
         }
         if(allInsults.Count != 0){
             return Ok(allInsults);
