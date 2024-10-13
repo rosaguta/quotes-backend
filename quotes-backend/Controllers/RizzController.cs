@@ -53,7 +53,7 @@ public class RizzController : ControllerBase
     public IActionResult GetAllRizz(string text)
     {
         List<Quote>? allRizz = new List<Quote>();
-        if(text is not null || text != ""){
+        if(text is not null){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
                 allRizz.Add(_RizzCollection.FindRizzBasedOnText(text));

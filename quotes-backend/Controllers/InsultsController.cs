@@ -56,7 +56,7 @@ public class InsultsController : ControllerBase
     public IActionResult AllInsults(string? text)
     {
         List<Quote> allInsults = new List<Quote>();
-        if(text is not null || text != ""){
+        if(text is not null){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
                 allInsults.Add(_insultsCollection.FindInsultBasedOnText(text));
