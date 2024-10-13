@@ -50,7 +50,7 @@ public class RizzController : ControllerBase
     )]
     [HttpGet]
     [Route("/Rizzes")]
-    public IActionResult GetAllRizz(string text)
+    public IActionResult GetAllRizz(string? text)
     {
         List<Quote>? allRizz = new List<Quote>();
         if(text is not null){
