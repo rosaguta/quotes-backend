@@ -44,6 +44,7 @@ public class QuoteDAL : IQuoteDAL
             }
             return new QuoteDTO
             {
+                id = doc["_id"].ToString(),
                 text = doc["Text"].ToString(),
                 person = doc["Person"].ToString(),
                 DateTimeCreated = dateTimeCreated,
@@ -165,6 +166,40 @@ public class QuoteDAL : IQuoteDAL
         var result = collection.DeleteOne(filter);
         return result.DeletedCount > 0;
     }
+
+    public QuoteDTO FindQuoteBasedOnText(string text)
+    {
+        IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("quotes");
+        var filter = Builders<QuoteDTO>.Filter.Eq(q => q.text, text);
+        var doc = collection.Find(filter).FirstOrDefault();
+        try
+        {
+            string dateTimeString = doc.DateTimeCreated.ToString();
+            DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
+            string? context = null;
+            return new QuoteDTO
+            {
+                id = doc.id,
+                text = doc.text,
+                person = doc.person,
+                DateTimeCreated = dateTimeCreated,
+                Context = doc.Context
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public QuoteDTO GetQuote(string id)
+    {
+        IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("quotes");
+        var filter = Builders<QuoteDTO>.Filter.Eq(q => q.id, id);
+        return collection.Find(filter).FirstOrDefault();
+        
+    }
+
     private string? GetConnectionString()
     {
         string? mongoHost = Environment.GetEnvironmentVariable("MONGODB");

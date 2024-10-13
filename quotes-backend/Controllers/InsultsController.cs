@@ -53,16 +53,29 @@ public class InsultsController : ControllerBase
     )]
     [HttpGet]
     [Route("/Insults")]
-    public List<Quote> AllInsults()
+    public IActionResult AllInsults(string? text)
     {
-        List<Quote> allquotes = new List<Quote>();
-        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-        {
-            allquotes = _insultsCollection.GetAllInsults(true);
-        }else{
-            allquotes = _insultsCollection.GetAllInsults(false);
+        List<Quote> allInsults = new List<Quote>();
+        if(text is not null || text != ""){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allInsults.Add(_insultsCollection.FindInsultBasedOnText(text));
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+            
         }
-        return allquotes;
+        else
+        {
+            allInsults = _insultsCollection.GetAllInsults(false);
+        }
+        if(allInsults.Count != 0){
+            return Ok(allInsults);
+        }
+
+        return NoContent();
     }
     [SwaggerOperation(
         Summary = "Adds a new Insult",

@@ -50,21 +50,26 @@ public class RizzController : ControllerBase
     )]
     [HttpGet]
     [Route("/Rizzes")]
-    public IActionResult GetAllRizz()
+    public IActionResult GetAllRizz(string text)
     {
-        List<Quote>? rizzes = new List<Quote>();
-        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-        {
-            rizzes = _RizzCollection.GetAllRizz(true);    
+        List<Quote>? allRizz = new List<Quote>();
+        if(text is not null || text != ""){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allRizz.Add(_RizzCollection.FindRizzBasedOnText(text));
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+            
         }
         else
         {
-            rizzes = _RizzCollection.GetAllRizz(false);
+            allRizz = _RizzCollection.GetAllRizz(false);
         }
-        
-        if (rizzes[0] is not null)
-        {
-            return Ok(rizzes);
+        if(allRizz != null && allRizz.Count != 0){
+            return Ok(allRizz);
         }
 
         return NoContent();

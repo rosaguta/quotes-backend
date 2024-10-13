@@ -9,6 +9,7 @@ public class Quote
     public string person { get; set; }
     public string? Context { get; set; }
     public DateTime DateTimeCreated { get; set; }
+    public string QuoteToStringWithContext { get; set; }
 
     public override string ToString()
     {
