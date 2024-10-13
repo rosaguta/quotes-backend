@@ -55,7 +55,7 @@ public class QuotesController : ControllerBase
     public IActionResult AllQuotes(string? text)
     {
         List<Quote> allquotes = new List<Quote>();
-        if(text is not null || text != ""){
+        if(text is not null){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
                 allquotes.Add(_quoteCollection.FindQuoteBasedOnText(text));
@@ -68,7 +68,14 @@ public class QuotesController : ControllerBase
         }
         else
         {
-            allquotes = _quoteCollection.GetAllQuotes(false);
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allquotes = _quoteCollection.GetAllQuotes(true);
+            }
+            else
+            {
+                allquotes = _quoteCollection.GetAllQuotes(false);
+            }
         }
         if(allquotes.Count != 0){
             return Ok(allquotes);

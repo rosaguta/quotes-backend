@@ -50,10 +50,10 @@ public class RizzController : ControllerBase
     )]
     [HttpGet]
     [Route("/Rizzes")]
-    public IActionResult GetAllRizz(string text)
+    public IActionResult GetAllRizz(string? text)
     {
         List<Quote>? allRizz = new List<Quote>();
-        if(text is not null || text != ""){
+        if(text is not null){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
                 allRizz.Add(_RizzCollection.FindRizzBasedOnText(text));
@@ -66,7 +66,14 @@ public class RizzController : ControllerBase
         }
         else
         {
-            allRizz = _RizzCollection.GetAllRizz(false);
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allRizz = _RizzCollection.GetAllRizz(true);
+            }
+            else
+            {
+                allRizz = _RizzCollection.GetAllRizz(false);
+            }
         }
         if(allRizz != null && allRizz.Count != 0){
             return Ok(allRizz);
