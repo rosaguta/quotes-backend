@@ -47,24 +47,35 @@ public class QuotesController : ControllerBase
     }
 
     [SwaggerOperation(
-        Summary = "Gets all quotes from database"
+        Summary = "Gets all quotes from database",
+        Description = "When the text field is filled in, the API will try to find the requested quote. Only works with AUTH"
     )]
     [HttpGet]
     [Route("/Quotes")]
-    public List<Quote> AllQuotes()
+    public IActionResult AllQuotes(string? text)
     {
         List<Quote> allquotes = new List<Quote>();
-        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-        {
-            allquotes = _quoteCollection.GetAllQuotes(true);
+        if(text is not null || text != ""){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allquotes.Add(_quoteCollection.FindQuoteBasedOnText(text));
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+            
         }
         else
         {
             allquotes = _quoteCollection.GetAllQuotes(false);
         }
-        return allquotes;
-    }
+        if(allquotes.Count != 0){
+            return Ok(allquotes);
+        }
 
+        return NoContent();
+    }
     [SwaggerOperation(
         Summary = "Adds a new Quote",
         Description = "Requires AUTH"

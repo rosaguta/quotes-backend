@@ -101,6 +101,13 @@ public class QuoteCollection
             RecentlyRequestedQuotes.Insert(0,quote.ToString());
         }
     }
+
+    public Quote getQuote(string id)
+    {
+        QuoteDTO quoteDto = _QuoteInterface.GetQuote(id);
+        Quote quote = quoteDto.ConvertToLogic();
+        return quote;
+    }
     public bool NewQuote(QuoteDTOPost quote)
     {
         bool created =_QuoteInterface.NewQuote(quote);
@@ -116,6 +123,13 @@ public class QuoteCollection
 
         
         return Quotes;
+    }
+
+    public Quote FindQuoteBasedOnText(string text)
+    {
+        QuoteDTO? quoteDTO = _QuoteInterface.FindQuoteBasedOnText(text);
+        Quote quote = quoteDTO.ConvertToLogic();
+        return quote;
     }
     public bool UpdateQuote(string id, Quote quote, bool HasRights)
     {

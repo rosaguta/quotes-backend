@@ -39,6 +39,16 @@ public class InsultsCollection
         return quote.ToString();
     }
 
+    public Quote? FindInsultBasedOnText(string text)
+    {
+        QuoteDTO? quoteDTO = _InsultInterface.FindInsultBasedOnText(text);
+        if (quoteDTO is null)
+        {
+            return null;
+        }
+        Quote quote = quoteDTO.ConvertToLogic();
+        return quote;
+    }
     public List<Quote> GetAllInsults(bool rights)
     {
         List<QuoteDTO> quoteDtos = _InsultInterface.GetAllInsults(rights);

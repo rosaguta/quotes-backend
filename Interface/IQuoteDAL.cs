@@ -10,4 +10,6 @@ public interface IQuoteDAL
     int CountDocuments();
     bool UpdateQuote(string id, QuoteDTO quoteDto, bool HasRights);
     bool DeleteQuote(string id);
+    QuoteDTO FindQuoteBasedOnText(string text);
+    QuoteDTO GetQuote(string id);
 }

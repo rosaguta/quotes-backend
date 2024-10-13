@@ -10,4 +10,5 @@ public interface IRizzDAL
     int CountDocuments();
     bool UpdateRizz(string id, QuoteDTO quoteDto);
     bool DeleteRizz(string id);
+    QuoteDTO FindRizzBasedOnText(string text);
 }
