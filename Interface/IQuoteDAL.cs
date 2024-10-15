@@ -12,4 +12,5 @@ public interface IQuoteDAL
     bool DeleteQuote(string id);
     QuoteDTO FindQuoteBasedOnText(string text);
     QuoteDTO GetQuote(string id);
+    QuoteDTO FindQuoteBasedOnContext(string Context);
 }

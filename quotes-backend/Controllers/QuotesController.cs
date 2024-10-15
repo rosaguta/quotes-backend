@@ -52,30 +52,44 @@ public class QuotesController : ControllerBase
     )]
     [HttpGet]
     [Route("/Quotes")]
-    public IActionResult AllQuotes(string? text)
+    public IActionResult AllQuotes(string? text, string? context)
     {
+        if (text is not null && context is not null)
+        {
+            return BadRequest("You can only provide the `text` OR the `context` params");
+        }
         List<Quote> allquotes = new List<Quote>();
         if(text is not null){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
                 allquotes.Add(_quoteCollection.FindQuoteBasedOnText(text));
+                if (allquotes.Count != 0)
+                {
+                    return Ok(allquotes);
+                }
+                return NoContent();
             }
-            else
+            return Unauthorized("Please kys or login to retrieve the context");
+        }
+        if(context is not null){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
-                return Unauthorized("Please kys or login to retrieve the context");
+                allquotes.Add(_quoteCollection.FindQuoteBasedOnContext(context));
+                if (allquotes.Count != 0 && allquotes[0].text is not null)
+                {
+                    return Ok(allquotes);
+                }
+                return NoContent();
             }
-            
+            return Unauthorized("Please kys or login to retrieve the context");
+        }
+        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+        {
+           allquotes = _quoteCollection.GetAllQuotes(true);
         }
         else
         {
-            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-            {
-                allquotes = _quoteCollection.GetAllQuotes(true);
-            }
-            else
-            {
-                allquotes = _quoteCollection.GetAllQuotes(false);
-            }
+            allquotes = _quoteCollection.GetAllQuotes(false);
         }
         if(allquotes.Count != 0){
             return Ok(allquotes);

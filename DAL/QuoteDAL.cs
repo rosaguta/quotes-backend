@@ -191,7 +191,29 @@ public class QuoteDAL : IQuoteDAL
             return null;
         }
     }
-
+    public QuoteDTO FindQuoteBasedOnContext(string context)
+    {
+        IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("quotes");
+        var filter = Builders<QuoteDTO>.Filter.Eq(q => q.Context, context);
+        var doc = collection.Find(filter).FirstOrDefault();
+        try
+        {
+            string dateTimeString = doc.DateTimeCreated.ToString();
+            DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
+            return new QuoteDTO
+            {
+                id = doc.id,
+                text = doc.text,
+                person = doc.person,
+                DateTimeCreated = dateTimeCreated,
+                Context = doc.Context
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
     public QuoteDTO GetQuote(string id)
     {
         IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("quotes");

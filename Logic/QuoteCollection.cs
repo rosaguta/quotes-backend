@@ -131,6 +131,12 @@ public class QuoteCollection
         Quote quote = quoteDTO.ConvertToLogic();
         return quote;
     }
+
+    public Quote FindQuoteBasedOnContext(string context)
+    {
+        QuoteDTO? quoteDto = _QuoteInterface.FindQuoteBasedOnContext(context);
+        return quoteDto.ConvertToLogic();
+    }
     public bool UpdateQuote(string id, Quote quote, bool HasRights)
     {
         QuoteDTO quoteDto = quote.ConvertToDTO();
