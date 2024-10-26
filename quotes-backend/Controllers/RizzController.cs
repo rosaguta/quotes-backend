@@ -17,39 +17,72 @@ public class RizzController : ControllerBase
         _RizzCollection = new RizzCollection();
     }
     [SwaggerOperation(
-        Summary = "Gets random Rizz (if there are any)"
+        Summary = "Gets random Rizz (if there are any)",
+        Description = "Requires AUTH for retrieving context"
     )]
     [HttpGet]
     [Route("/Rizzes/Random")]
-    public IActionResult GetRandom()
+    public IActionResult GetRandom(bool withContext, bool asObject)
     {
-        string? rizz = _RizzCollection.GetRandomRizz();
-        if (rizz is not null)
-        {
-            return Ok(rizz);
+        object? quote;
+        if(withContext){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                if(asObject){
+                    quote = _RizzCollection.GetRandomRizz(true,true);
+                }
+                else
+                {
+                    quote = _RizzCollection.GetRandomRizz(true,false);
+                }
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
         }
-        return NoContent();
+        else
+        {
+            quote = _RizzCollection.GetRandomRizz(false);
+        }
+        if (quote == "" | quote is null)
+        {
+            return BadRequest("Something went wrong, blame Rose for this issue :3");
+        }
+        return Ok(quote);
     }
     [SwaggerOperation(
         Summary = "Gets all Rizz"
     )]
     [HttpGet]
     [Route("/Rizzes")]
-    public IActionResult GetAllRizz()
+    public IActionResult GetAllRizz(string? text)
     {
-        List<Quote>? rizzes = new List<Quote>();
-        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-        {
-            rizzes = _RizzCollection.GetAllRizz(true);    
+        List<Quote>? allRizz = new List<Quote>();
+        if(text is not null){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allRizz.Add(_RizzCollection.FindRizzBasedOnText(text));
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+            
         }
         else
         {
-            rizzes = _RizzCollection.GetAllRizz(false);
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allRizz = _RizzCollection.GetAllRizz(true);
+            }
+            else
+            {
+                allRizz = _RizzCollection.GetAllRizz(false);
+            }
         }
-        
-        if (rizzes[0] is not null)
-        {
-            return Ok(rizzes);
+        if(allRizz != null && allRizz.Count != 0){
+            return Ok(allRizz);
         }
 
         return NoContent();

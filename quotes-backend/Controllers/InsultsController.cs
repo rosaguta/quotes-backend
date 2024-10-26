@@ -19,18 +19,46 @@ public class InsultsController : ControllerBase
     }
 
     [SwaggerOperation(
-        Summary = "Gets random Insult"
+        Summary = "Gets random Insult",
+        Description = "Requires AUTH for retrieving context"
     )]
     [HttpGet]
     [Route("Random")]
-    public IActionResult GetRandom()
+    public IActionResult GetRandom(bool withContext, bool asObject)
     {
-        string? insult =_insultsCollection.GetRandomInsult();
-        if (insult is null)
+        object? quote;
+        if(withContext){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                if(asObject){
+                    quote = _insultsCollection.GetRandomInsult(true, true);
+                }
+                else
+                {
+                    quote =  _insultsCollection.GetRandomInsult(true, false);
+                }
+                
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+        }
+        else
+        {
+            if(asObject){
+                quote = _insultsCollection.GetRandomInsult(false, true);
+            }
+            else
+            {
+                quote =  _insultsCollection.GetRandomInsult(false, false);
+            }
+        }
+        if (quote == "" | quote is null)
         {
             return BadRequest("Something went wrong, blame Rose for this issue :3");
         }
-        return Ok(insult);
+        return Ok(quote);
     }
     
     [SwaggerOperation(
@@ -38,16 +66,36 @@ public class InsultsController : ControllerBase
     )]
     [HttpGet]
     [Route("/Insults")]
-    public List<Quote> AllInsults()
+    public IActionResult AllInsults(string? text)
     {
-        List<Quote> allquotes = new List<Quote>();
-        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-        {
-            allquotes = _insultsCollection.GetAllInsults(true);
-        }else{
-            allquotes = _insultsCollection.GetAllInsults(false);
+        List<Quote> allInsults = new List<Quote>();
+        if(text is not null){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allInsults.Add(_insultsCollection.FindInsultBasedOnText(text));
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+            
         }
-        return allquotes;
+        else
+        {
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allInsults = _insultsCollection.GetAllInsults(true);
+            }
+            else
+            {
+                allInsults = _insultsCollection.GetAllInsults(true);
+            }
+        }
+        if(allInsults.Count != 0){
+            return Ok(allInsults);
+        }
+
+        return NoContent();
     }
     [SwaggerOperation(
         Summary = "Adds a new Insult",

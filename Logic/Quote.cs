@@ -9,9 +9,19 @@ public class Quote
     public string person { get; set; }
     public string? Context { get; set; }
     public DateTime DateTimeCreated { get; set; }
+    public string QuoteToStringWithContext { get; set; }
 
     public override string ToString()
     {
         return text + " - " + person + " " + DateTimeCreated.ToString("dd/MM/yyyy HH:mm");
+    }
+
+    public string ToStringWithContext()
+    {
+        if (Context is null)
+        {
+            Context = "";
+        }
+        return text + " - " + person + " " + DateTimeCreated.ToString("dd/MM/yyyy HH:mm") + " | " + Context;
     }
 }

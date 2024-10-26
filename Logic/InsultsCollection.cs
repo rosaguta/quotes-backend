@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using DTO;
 using Factory;
 using Interface;
@@ -8,30 +9,54 @@ namespace Logic;
 public class InsultsCollection
 {
     public List<Quote> Insults { get; set; }
+    private Random _random { get; set; }
+
     readonly IInsultDAL _InsultInterface;
-    private static readonly Random _random = new Random();
     private static Quote _LastQuote = new Quote(){Context = "",DateTimeCreated = new DateTime(), person = "", text = ""};
     
     public InsultsCollection()
     {
+        int seed = RandomNumberGenerator.GetInt32(0, int.MaxValue);
+        _random = new Random(seed);
         Insults = new List<Quote>();
         _InsultInterface = DalFactory.GetInsultDal();
     }
     
-    public string? GetRandomInsult()
+    public object? GetRandomInsult(bool hasRights, bool asObject)
     {
         int lengthOfDB = GetLenghtOfDB();
         int randomInt = _random.Next(0, lengthOfDB);
-            QuoteDTO quoteDto = _InsultInterface.GetRandomInsult(randomInt);
-            if (quoteDto is null)
+        QuoteDTO? quoteDto = _InsultInterface.GetRandomInsult(randomInt, hasRights);
+        if (quoteDto is null)
+        {
+            return null;
+        }
+        Quote quote = quoteDto.ConvertToLogic();
+        if(hasRights){
+            if (asObject)
             {
-                return null;
+                return quote;
             }
-            Quote quote = quoteDto.ConvertToLogic();
+            return quote.ToStringWithContext();
+        }
+        if(asObject)
+        {
+            return quote;
+        }
 
         return quote.ToString();
     }
 
+    public Quote? FindInsultBasedOnText(string text)
+    {
+        QuoteDTO? quoteDTO = _InsultInterface.FindInsultBasedOnText(text);
+        if (quoteDTO is null)
+        {
+            return null;
+        }
+        Quote quote = quoteDTO.ConvertToLogic();
+        return quote;
+    }
     public List<Quote> GetAllInsults(bool rights)
     {
         List<QuoteDTO> quoteDtos = _InsultInterface.GetAllInsults(rights);

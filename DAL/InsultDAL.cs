@@ -21,7 +21,7 @@ public class InsultDAL : IInsultDAL
         }
     }   
     
-    public QuoteDTO? GetRandomInsult(int randomint)
+    public QuoteDTO? GetRandomInsult(int randomint, bool hasRights)
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("insults");
         var filter = Builders<BsonDocument>.Filter.Empty;
@@ -30,13 +30,21 @@ public class InsultDAL : IInsultDAL
         {
             string dateTimeString = doc["DateTimeCreated"].ToString();
             DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
-           
+            string? context = null;
+            if (hasRights)
+            {
+                try
+                {
+                    context = doc["Context"].ToString();
+                }
+                catch{}
+            }
             return new QuoteDTO
             {
                 text = doc["Text"].ToString(),
                 person = doc["Person"].ToString(),
                 DateTimeCreated = dateTimeCreated,
-                Context = null
+                Context = context
             };
         }
         catch
@@ -84,6 +92,30 @@ public class InsultDAL : IInsultDAL
         return quoteDtos;
     }
 
+    public QuoteDTO FindInsultBasedOnText(string text)
+    {
+        IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("insults");
+        var filter = Builders<QuoteDTO>.Filter.Eq(q => q.text, text);
+        var doc = collection.Find(filter).FirstOrDefault();
+        try
+        {
+            string dateTimeString = doc.DateTimeCreated.ToString();
+            DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
+            string? context = null;
+            return new QuoteDTO
+            {
+                id = doc.id,
+                text = doc.text,
+                person = doc.person,
+                DateTimeCreated = dateTimeCreated,
+                Context = doc.Context
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
     public bool NewInsult(QuoteDTOPost InsultDTO)
     {
         BsonDocument bsonDocument = InsultDTO.ToBsonDocument();
@@ -139,11 +171,12 @@ public class InsultDAL : IInsultDAL
         return totalCountInt;
     }
 
-    
+
 
     public bool DeleteInsult(string id)
     {
-        IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("insults");
+        IMongoCollection<BsonDocument> collection =
+            _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("insults");
         var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
         var result = collection.DeleteOne(filter);
         return result.DeletedCount > 0;

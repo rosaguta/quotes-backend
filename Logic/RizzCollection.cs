@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using DTO;
 using Interface;
 using Factory;
@@ -8,11 +9,13 @@ namespace Logic;
 public class RizzCollection
 {
     public List<Quote>? Rizzes { get; set; }
+    private Random _random { get; set; }
 
     IRizzDAL _rizzInterface;
-    private static readonly Random _random = new Random();
     public RizzCollection()
     {
+        int seed = RandomNumberGenerator.GetInt32(0, int.MaxValue);
+        _random = new Random(seed);
         Rizzes = new List<Quote>();
         _rizzInterface = DalFactory.GetRizzDal();
     }
@@ -32,18 +35,35 @@ public class RizzCollection
         return null;
     }
 
-    public string GetRandomRizz()
+    public object? GetRandomRizz(bool withRights, bool asObject)
     {
         int lenghtofdb = GetLenghtOfDB();
         int randomint = _random.Next(0, lenghtofdb);
         
-        QuoteDTO? rizzDto = _rizzInterface.GetRandomRizz(randomint);
+        QuoteDTO? rizzDto = _rizzInterface.GetRandomRizz(randomint, withRights);
         if (rizzDto is null)
         {
             return null;
         }
         Quote rizz = rizzDto.ConvertToLogic();
+        if(withRights){
+            if(asObject){
+                return rizz;
+            }
+            return rizz.ToStringWithContext();
+        }
+        if(asObject)
+        {
+            return rizz;
+        }
+
         return rizz.ToString();
+    }
+    public Quote FindRizzBasedOnText(string text)
+    {
+        QuoteDTO? quoteDTO = _rizzInterface.FindRizzBasedOnText(text);
+        Quote quote = quoteDTO.ConvertToLogic();
+        return quote;
     }
 
     public bool NewRizz(QuoteDTOPost rizzPost)

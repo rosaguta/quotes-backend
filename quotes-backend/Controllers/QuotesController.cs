@@ -17,34 +17,83 @@ public class QuotesController : ControllerBase
         _quoteCollection = new QuoteCollection();
     }
     [SwaggerOperation(
-        Summary = "Gets random Quote"
+        Summary = "Gets random Quote",
+        Description = "Requires AUTH for retrieving context"
     )]
     [HttpGet]
     [Route("Random")]
-    public IActionResult GetRandom()
+    public IActionResult GetRandom(bool withContext, bool asObject)
     {
-        string? quote = _quoteCollection.GetRandomQuote();
-        if (quote is null)
+        object? quote;
+        if(withContext){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                if(asObject){
+                    quote = _quoteCollection.GetRandomQuote(true, true);
+                }
+                else
+                {
+                    quote = _quoteCollection.GetRandomQuote(true, false);
+                }
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+        }
+        else
+        {
+            if(asObject){
+                quote = _quoteCollection.GetRandomQuote(false, true);
+            }
+            else
+            {
+                quote = _quoteCollection.GetRandomQuote(false, false);
+            }
+        }
+        if (quote == "" | quote is null)
         {
             return BadRequest("Something went wrong, blame Rose for this issue :3");
         }
         return Ok(quote);
     }
+
     [SwaggerOperation(
-        Summary = "Gets all quotes from database"
+        Summary = "Gets all quotes from database",
+        Description = "When the text field is filled in, the API will try to find the requested quote. Only works with AUTH"
     )]
     [HttpGet]
     [Route("/Quotes")]
-    public List<Quote> AllQuotes()
+    public IActionResult AllQuotes(string? text)
     {
         List<Quote> allquotes = new List<Quote>();
-        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-        {
-            allquotes = _quoteCollection.GetAllQuotes(true);
-        }else{
-            allquotes = _quoteCollection.GetAllQuotes(false);
+        if(text is not null){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allquotes.Add(_quoteCollection.FindQuoteBasedOnText(text));
+            }
+            else
+            {
+                return Unauthorized("Please kys or login to retrieve the context");
+            }
+            
         }
-        return allquotes;
+        else
+        {
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+            {
+                allquotes = _quoteCollection.GetAllQuotes(true);
+            }
+            else
+            {
+                allquotes = _quoteCollection.GetAllQuotes(false);
+            }
+        }
+        if(allquotes.Count != 0){
+            return Ok(allquotes);
+        }
+
+        return NoContent();
     }
     [SwaggerOperation(
         Summary = "Adds a new Quote",

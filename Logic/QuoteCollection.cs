@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using DTO;
 using Interface;
@@ -12,49 +13,109 @@ namespace Logic;
 
 public class QuoteCollection
 {
-    public List<Quote> Quotes { get; set; }
-    
+    private List<Quote> Quotes { get; set; }
+    private static List<string> RecentlyRequestedQuotes = new List<string>();
+    private Random _random { get; set; }
     readonly IQuoteDAL _QuoteInterface;
-    private static readonly Random _random = new Random();
     private static Quote _LastQuote = new Quote(){Context = "",DateTimeCreated = new DateTime(), person = "", text = ""};
 
     public QuoteCollection()
     {
+        int seed = RandomNumberGenerator.GetInt32(0, int.MaxValue);
+        _random = new Random(seed);
         Quotes = new List<Quote>();
         _QuoteInterface = DalFactory.GetQuoteDal();
     }
 
-    public string? GetRandomQuote()
+    public object? GetRandomQuote(bool hasRights, bool asObject)
     {
         int lengthOfDB = GetLenghtOfDB();
         int randomInt = _random.Next(0, lengthOfDB);
         QuoteDTO? quoteDto;
         Quote quote;
-        var comp = StringComparison.OrdinalIgnoreCase;
+        
         do
         {
-            quoteDto = _QuoteInterface.GetRandomQuote(randomInt);
+            quoteDto = _QuoteInterface.GetRandomQuote(randomInt, hasRights);
+            
             if (quoteDto is null)
             {
                 return null;
             }
             quote = quoteDto.ConvertToLogic();
-            if (_LastQuote.person.Contains("benj", comp))
+
+            if (BenjiCheck(quote))
             {
-                if (quote.person.Contains("benj", comp))
-                {
-                    randomInt = _random.Next(0, lengthOfDB);
-                    continue;
-                }
+                randomInt = _random.Next(0, lengthOfDB);
+                continue;
+            }
+            
+            if (RecentlyAdded(quote))
+            {
+                randomInt = _random.Next(0, lengthOfDB);
+                continue;
             }
             break;
         } while (true);
         _LastQuote = quote;
+        AddAndRemoveQuote(quote);
+        if(hasRights){
+            if (asObject)
+            {
+                return quote;
+            }
+            return quote.ToStringWithContext();
+        }
+
+        if (asObject)
+        {
+            return quote;
+        }
         return quote.ToString();
     }
 
+    private bool BenjiCheck(Quote quote)
+    {
+        var comp = StringComparison.OrdinalIgnoreCase;
+        if (_LastQuote.person.Contains("benj", comp))
+        {
+            if (quote.person.Contains("benj", comp))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-   
+    private bool RecentlyAdded(Quote quote)
+    {
+        if (RecentlyRequestedQuotes.Contains(quote.ToString()))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void AddAndRemoveQuote(Quote quote)
+    {
+        int lenghtoflist = RecentlyRequestedQuotes.Count;
+        if (lenghtoflist == 15)
+        {
+            RecentlyRequestedQuotes.RemoveAt(14);
+        }
+        if (lenghtoflist < 15)
+        {
+            RecentlyRequestedQuotes.Insert(0,quote.ToString());
+        }
+    }
+
+    public Quote getQuote(string id)
+    {
+        QuoteDTO quoteDto = _QuoteInterface.GetQuote(id);
+        Quote quote = quoteDto.ConvertToLogic();
+        return quote;
+    }
     public bool NewQuote(QuoteDTOPost quote)
     {
         bool created =_QuoteInterface.NewQuote(quote);
@@ -70,6 +131,13 @@ public class QuoteCollection
 
         
         return Quotes;
+    }
+
+    public Quote FindQuoteBasedOnText(string text)
+    {
+        QuoteDTO? quoteDTO = _QuoteInterface.FindQuoteBasedOnText(text);
+        Quote quote = quoteDTO.ConvertToLogic();
+        return quote;
     }
     public bool UpdateQuote(string id, Quote quote, bool HasRights)
     {
