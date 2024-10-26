@@ -57,6 +57,11 @@ public class InsultsCollection
         Quote quote = quoteDTO.ConvertToLogic();
         return quote;
     }
+    public Quote FindInsultBasedOnContext(string context)
+    {
+        QuoteDTO? quoteDto = _InsultInterface.FindInsultBasedOnContext(context);
+        return quoteDto.ConvertToLogic();
+    }
     public List<Quote> GetAllInsults(bool rights)
     {
         List<QuoteDTO> quoteDtos = _InsultInterface.GetAllInsults(rights);

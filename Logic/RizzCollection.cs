@@ -65,6 +65,12 @@ public class RizzCollection
         Quote quote = quoteDTO.ConvertToLogic();
         return quote;
     }
+    public Quote FindRizzBasedOnContext(string context)
+    {
+        QuoteDTO? quoteDTO = _rizzInterface.FindRizzBasedOnContext(context);
+        Quote quote = quoteDTO.ConvertToLogic();
+        return quote;
+    }
 
     public bool NewRizz(QuoteDTOPost rizzPost)
     {

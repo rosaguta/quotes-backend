@@ -133,6 +133,30 @@ public class RizzDAL : IRizzDAL
             return null;
         }
     }
+    
+    public QuoteDTO FindRizzBasedOnContext(string context)
+    {
+        IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("rizz");
+        var filter = Builders<QuoteDTO>.Filter.Eq(q => q.Context, context);
+        var doc = collection.Find(filter).FirstOrDefault();
+        try
+        {
+            string dateTimeString = doc.DateTimeCreated.ToString();
+            DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
+            return new QuoteDTO
+            {
+                id = doc.id,
+                text = doc.text,
+                person = doc.person,
+                DateTimeCreated = dateTimeCreated,
+                Context = doc.Context
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
     public bool UpdateRizz(string id, QuoteDTO quoteDto)
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");

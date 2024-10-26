@@ -116,6 +116,29 @@ public class InsultDAL : IInsultDAL
             return null;
         }
     }
+    public QuoteDTO FindInsultBasedOnContext(string context)
+    {
+        IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("insults");
+        var filter = Builders<QuoteDTO>.Filter.Eq(q => q.Context, context);
+        var doc = collection.Find(filter).FirstOrDefault();
+        try
+        {
+            string dateTimeString = doc.DateTimeCreated.ToString();
+            DateTime dateTimeCreated = DateTime.Parse(dateTimeString);
+            return new QuoteDTO
+            {
+                id = doc.id,
+                text = doc.text,
+                person = doc.person,
+                DateTimeCreated = dateTimeCreated,
+                Context = doc.Context
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
     public bool NewInsult(QuoteDTOPost InsultDTO)
     {
         BsonDocument bsonDocument = InsultDTO.ToBsonDocument();
@@ -170,8 +193,6 @@ public class InsultDAL : IInsultDAL
         int totalCountInt = (int)count;
         return totalCountInt;
     }
-
-
 
     public bool DeleteInsult(string id)
     {

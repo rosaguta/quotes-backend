@@ -10,4 +10,6 @@ public interface IInsultDAL
     bool UpdateInsult(string id, QuoteDTO InsultDto, bool HasRights);
     bool DeleteInsult(string id);
     QuoteDTO FindInsultBasedOnText(string text);
+    QuoteDTO FindInsultBasedOnContext(string Context);
+
 }

@@ -49,33 +49,47 @@ public class InsultsController : ControllerBase
     )]
     [HttpGet]
     [Route("/Insults")]
-    public IActionResult AllInsults(string? text)
+    public IActionResult AllInsults(string? text, string? context)
     {
-        List<Quote> allInsults = new List<Quote>();
+        if (text is not null && context is not null)
+        {
+            return BadRequest("You can only provide the `text` OR the `context` params");
+        }
+        List<Quote> allquotes = new List<Quote>();
         if(text is not null){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
-                allInsults.Add(_insultsCollection.FindInsultBasedOnText(text));
+                allquotes.Add(_insultsCollection.FindInsultBasedOnContext(text));
+                if (allquotes.Count != 0)
+                {
+                    return Ok(allquotes);
+                }
+                return NoContent();
             }
-            else
+            return Unauthorized("Please kys or login to retrieve the context");
+        }
+        if(context is not null){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
-                return Unauthorized("Please kys or login to retrieve the context");
+                allquotes.Add(_insultsCollection.FindInsultBasedOnContext(context));
+                if (allquotes.Count != 0 && allquotes[0].text is not null)
+                {
+                    return Ok(allquotes);
+                }
+                return NoContent();
             }
-            
+            return Unauthorized("Please kys or login to retrieve the context");
+        }
+        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+        {
+            allquotes = _insultsCollection.GetAllInsults(true);
         }
         else
         {
-            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-            {
-                allInsults = _insultsCollection.GetAllInsults(true);
-            }
-            else
-            {
-                allInsults = _insultsCollection.GetAllInsults(true);
-            }
+            allquotes = _insultsCollection.GetAllInsults(false);
         }
-        if(allInsults.Count != 0){
-            return Ok(allInsults);
+        if(allquotes.Count != 0){
+            return Ok(allquotes);
         }
 
         return NoContent();

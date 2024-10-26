@@ -46,33 +46,47 @@ public class RizzController : ControllerBase
     )]
     [HttpGet]
     [Route("/Rizzes")]
-    public IActionResult GetAllRizz(string? text)
+    public IActionResult GetAllRizz(string? text, string? context)
     {
-        List<Quote>? allRizz = new List<Quote>();
+        if (text is not null && context is not null)
+        {
+            return BadRequest("You can only provide the `text` OR the `context` params");
+        }
+        List<Quote>? allquotes = new List<Quote>();
         if(text is not null){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
-                allRizz.Add(_RizzCollection.FindRizzBasedOnText(text));
+                allquotes.Add(_RizzCollection.FindRizzBasedOnText(text));
+                if (allquotes.Count != 0)
+                {
+                    return Ok(allquotes);
+                }
+                return NoContent();
             }
-            else
+            return Unauthorized("Please kys or login to retrieve the context");
+        }
+        if(context is not null){
+            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
-                return Unauthorized("Please kys or login to retrieve the context");
+                allquotes.Add(_RizzCollection.FindRizzBasedOnContext(context));
+                if (allquotes.Count != 0 && allquotes[0].text is not null)
+                {
+                    return Ok(allquotes);
+                }
+                return NoContent();
             }
-            
+            return Unauthorized("Please kys or login to retrieve the context");
+        }
+        if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
+        {
+            allquotes = _RizzCollection.GetAllRizz(true);
         }
         else
         {
-            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-            {
-                allRizz = _RizzCollection.GetAllRizz(true);
-            }
-            else
-            {
-                allRizz = _RizzCollection.GetAllRizz(false);
-            }
+            allquotes = _RizzCollection.GetAllRizz(false);
         }
-        if(allRizz != null && allRizz.Count != 0){
-            return Ok(allRizz);
+        if(allquotes.Count != 0){
+            return Ok(allquotes);
         }
 
         return NoContent();

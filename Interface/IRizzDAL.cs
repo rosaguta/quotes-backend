@@ -11,4 +11,6 @@ public interface IRizzDAL
     bool UpdateRizz(string id, QuoteDTO quoteDto);
     bool DeleteRizz(string id);
     QuoteDTO FindRizzBasedOnText(string text);
+    QuoteDTO FindRizzBasedOnContext(string Context);
+
 }
