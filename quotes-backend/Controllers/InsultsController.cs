@@ -26,38 +26,21 @@ public class InsultsController : ControllerBase
     [Route("Random")]
     public IActionResult GetRandom(bool withContext, bool asObject)
     {
-        object? quote;
-        if(withContext){
-            if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
-            {
-                if(asObject){
-                    quote = _insultsCollection.GetRandomInsult(true, true);
-                }
-                else
-                {
-                    quote =  _insultsCollection.GetRandomInsult(true, false);
-                }
-                
-            }
-            else
-            {
-                return Unauthorized("Please kys or login to retrieve the context");
-            }
-        }
-        else
+        // Check if either parameter requires permission
+        if ((withContext || asObject) && (!User.Identity.IsAuthenticated || !User.HasClaim(c => c.Type == "Rights" && c.Value == "True")))
         {
-            if(asObject){
-                quote = _insultsCollection.GetRandomInsult(false, true);
-            }
-            else
-            {
-                quote =  _insultsCollection.GetRandomInsult(false, false);
-            }
+            return Unauthorized("Access denied: please log in with appropriate permissions.");
         }
-        if (quote == "" | quote is null)
+
+        // Fetch the quote based on the parameters
+        object? quote = _insultsCollection.GetRandomInsult(withContext, asObject);
+
+        // Validate the quote object
+        if (quote == null || quote.ToString() == string.Empty)
         {
-            return BadRequest("Something went wrong, blame Rose for this issue :3");
+            return BadRequest("An error occurred while fetching the quote. Please contact support.");
         }
+
         return Ok(quote);
     }
     
