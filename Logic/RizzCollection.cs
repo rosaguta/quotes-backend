@@ -35,7 +35,7 @@ public class RizzCollection
         return null;
     }
 
-    public string? GetRandomRizz(bool withRights)
+    public object? GetRandomRizz(bool withRights, bool asObject)
     {
         int lenghtofdb = GetLenghtOfDB();
         int randomint = _random.Next(0, lenghtofdb);
@@ -47,7 +47,14 @@ public class RizzCollection
         }
         Quote rizz = rizzDto.ConvertToLogic();
         if(withRights){
+            if(asObject){
+                return rizz;
+            }
             return rizz.ToStringWithContext();
+        }
+        if(asObject)
+        {
+            return rizz;
         }
 
         return rizz.ToString();

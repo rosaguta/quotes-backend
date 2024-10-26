@@ -22,7 +22,7 @@ public class InsultsCollection
         _InsultInterface = DalFactory.GetInsultDal();
     }
     
-    public string? GetRandomInsult(bool hasRights)
+    public object? GetRandomInsult(bool hasRights, bool asObject)
     {
         int lengthOfDB = GetLenghtOfDB();
         int randomInt = _random.Next(0, lengthOfDB);
@@ -33,7 +33,15 @@ public class InsultsCollection
         }
         Quote quote = quoteDto.ConvertToLogic();
         if(hasRights){
+            if (asObject)
+            {
+                return quote;
+            }
             return quote.ToStringWithContext();
+        }
+        if(asObject)
+        {
+            return quote;
         }
 
         return quote.ToString();

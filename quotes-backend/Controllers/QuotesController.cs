@@ -22,13 +22,19 @@ public class QuotesController : ControllerBase
     )]
     [HttpGet]
     [Route("Random")]
-    public IActionResult GetRandom(bool withContext)
+    public IActionResult GetRandom(bool withContext, bool asObject)
     {
-        string? quote;
+        object? quote;
         if(withContext){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
-                quote = _quoteCollection.GetRandomQuote(true);
+                if(asObject){
+                    quote = _quoteCollection.GetRandomQuote(true, true);
+                }
+                else
+                {
+                    quote = _quoteCollection.GetRandomQuote(true, false);
+                }
             }
             else
             {
@@ -37,7 +43,13 @@ public class QuotesController : ControllerBase
         }
         else
         {
-            quote = _quoteCollection.GetRandomQuote(false);
+            if(asObject){
+                quote = _quoteCollection.GetRandomQuote(false, true);
+            }
+            else
+            {
+                quote = _quoteCollection.GetRandomQuote(false, false);
+            }
         }
         if (quote == "" | quote is null)
         {

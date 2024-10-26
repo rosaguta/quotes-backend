@@ -24,13 +24,20 @@ public class InsultsController : ControllerBase
     )]
     [HttpGet]
     [Route("Random")]
-    public IActionResult GetRandom(bool withContext)
+    public IActionResult GetRandom(bool withContext, bool asObject)
     {
-        string? quote;
+        object? quote;
         if(withContext){
             if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "Rights" && c.Value == "True"))
             {
-                quote = _insultsCollection.GetRandomInsult(true);
+                if(asObject){
+                    quote = _insultsCollection.GetRandomInsult(true, true);
+                }
+                else
+                {
+                    quote =  _insultsCollection.GetRandomInsult(true, false);
+                }
+                
             }
             else
             {
@@ -39,7 +46,13 @@ public class InsultsController : ControllerBase
         }
         else
         {
-            quote = _insultsCollection.GetRandomInsult(false);
+            if(asObject){
+                quote = _insultsCollection.GetRandomInsult(false, true);
+            }
+            else
+            {
+                quote =  _insultsCollection.GetRandomInsult(false, false);
+            }
         }
         if (quote == "" | quote is null)
         {
