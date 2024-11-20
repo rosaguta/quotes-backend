@@ -23,4 +23,9 @@ public static class DalFactory
     {
         return new InsultDAL();
     }
+
+    public static ILonerDAL GetLonerDal()
+    {
+        return new LonerDAL();
+    }
 }
