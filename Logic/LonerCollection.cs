@@ -15,6 +15,7 @@ public class LonerCollection
 
     public bool PostTime(Loner loner)
     {
+        loner.CalculateAloneDuration();
         LonerDTO lonerDto = loner.convertToDto();
         bool posted = _LonerInterface.PostTime(lonerDto);
         return posted;
