@@ -7,16 +7,16 @@ public static class LonerMapper
 {
     public static Loner ConvertToLogic(this LonerDTO lonerDto)
     {
-        return new Loner(lonerDto.Id)
-        {
-            DiscordUuid = lonerDto.DiscordUuid,
-            DiscordUsername = lonerDto.DiscordUsername,
-            DiscordDiscriminator = lonerDto.DiscordDiscriminator,
-            StartTimeAlone = lonerDto.StartTimeAlone,
-            EndTimeAlone = lonerDto.EndTimeAlone,
-            DiscordVoiceChannelId = lonerDto.DiscordVoiceChannelId,
-            DiscordVoiceChannelName = lonerDto.DiscordVoiceChannelName,
-        };
+        Loner loner = new Loner();
+        loner.AloneInMillis = lonerDto.AloneInMillis;
+        loner.DiscordUuid = lonerDto.DiscordUuid;
+        loner.DiscordUsername = lonerDto.DiscordUsername;
+        loner.DiscordDiscriminator = lonerDto.DiscordDiscriminator;
+        loner.StartTimeAlone = lonerDto.StartTimeAlone;
+        loner.EndTimeAlone = lonerDto.EndTimeAlone;
+        loner.DiscordVoiceChannelId = lonerDto.DiscordVoiceChannelId;
+        loner.DiscordVoiceChannelName = lonerDto.DiscordVoiceChannelName;
+        return loner;
     }
 
     public static LonerDTO convertToDto(this Loner loner)

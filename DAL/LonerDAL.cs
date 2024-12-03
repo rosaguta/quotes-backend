@@ -35,6 +35,25 @@ public class LonerDAL : ILonerDAL
             return false;
         }
     }
+
+    public List<LonerDTO>? getAllLoners()
+    {
+        List<LonerDTO> lonerDtos = new List<LonerDTO>();
+        try
+        {
+            var database = _mongodbclient.GetDatabase("Loner");
+            var collection = database.GetCollection<LonerDTO>("Users");
+            var filter = Builders<LonerDTO>.Filter.Empty;
+            lonerDtos = collection.Find(filter).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return null;
+        }
+
+        return lonerDtos;
+    }
     private string? GetConnectionString()
     {
         string? mongoHost = Environment.GetEnvironmentVariable("MONGODB");

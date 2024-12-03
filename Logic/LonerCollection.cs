@@ -20,4 +20,16 @@ public class LonerCollection
         bool posted = _LonerInterface.PostTime(lonerDto);
         return posted;
     }
+
+    public List<Loner>? GetAllLoners()
+    {
+        List<Loner>? loners = new List<Loner>();
+        List<LonerDTO>? lonerDtos = _LonerInterface.getAllLoners();
+        foreach (LonerDTO? lonerDto in lonerDtos)
+        {
+            loners.Add(lonerDto.ConvertToLogic());
+        }
+
+        return loners;
+    }
 }

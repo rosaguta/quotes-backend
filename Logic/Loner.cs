@@ -10,12 +10,13 @@ public class Loner
     public DateTime EndTimeAlone { get; set; }
     public string DiscordVoiceChannelId { get; set; }
     public string DiscordVoiceChannelName { get; set; }
-    private long AloneInMillis { get; set; }
+    public long AloneInMillis { get; set; }
     
     public Loner(){}
     public Loner(string id)
     {
         this.id = id;
+        this.AloneInMillis = default;
     }
     public void CalculateAloneDuration()
     {
@@ -28,6 +29,11 @@ public class Loner
     public long GetAloneDurationInMillis()
     {
         return AloneInMillis;
+    }
+
+    public void SetAloneDurationInMilis(long millis)
+    {
+        AloneInMillis = millis;
     }
 
     public string GetId()

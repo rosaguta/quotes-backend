@@ -14,6 +14,24 @@ public class LonerTimeController : ControllerBase
     {
         _lonerCollection = new LonerCollection();
     }
+
+    [HttpGet]
+    [SwaggerOperation(Summary = "Get Loner Time", Description = "Get all Loners from the db", Tags = new[] { "LonerTime" })]
+    public IActionResult getLoners()
+    {
+        List<Loner>? loners = _lonerCollection.GetAllLoners();
+        if (loners == null)
+        {
+            return BadRequest();
+        }
+
+        if (loners.Count == 0)
+        {
+            return NoContent();
+        }
+
+        return Ok(loners);
+    }
     
     [HttpPost]
     [SwaggerOperation(Summary = "Add Loner Time", Description = "Post the Loner Time", Tags = new[] { "LonerTime" })]
