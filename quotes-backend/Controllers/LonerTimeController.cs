@@ -10,9 +10,11 @@ namespace quotes_backend.Controllers;
 public class LonerTimeController : ControllerBase
 {
     private readonly LonerCollection _lonerCollection;
+    private readonly ChartGenerator _chartGenerator;
     public LonerTimeController()
     {
         _lonerCollection = new LonerCollection();
+        _chartGenerator = new ChartGenerator();
     }
 
     [HttpGet]
@@ -43,5 +45,21 @@ public class LonerTimeController : ControllerBase
             return Ok();
         }
         return BadRequest();
+    }
+    [HttpGet("graph")]
+    [SwaggerOperation(Summary = "Get Loner Time", Description = "Get all Loners from the db", Tags = new[] { "LonerTime" })]
+    public IActionResult graphImage()
+    {
+        List<Loner>? loners = _lonerCollection.GetAllLoners();
+        if (loners == null)
+        {
+            return BadRequest();
+        }
+        if (loners.Count == 0)
+        {
+            return NoContent();
+        }
+        byte[] imageBytes = _chartGenerator.generateImage(loners);
+        return Ok(imageBytes);
     }
 }
