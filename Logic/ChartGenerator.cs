@@ -1,4 +1,5 @@
 namespace Logic;
+
 public class ChartGenerator
 {
     private List<Loner> userTotals;
