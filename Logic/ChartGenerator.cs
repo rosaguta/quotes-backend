@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using Newtonsoft.Json;
 namespace Logic;
 
 public class ChartGenerator
@@ -17,7 +19,11 @@ public class ChartGenerator
     {
         prepareData(loners);
         prepareChartData();
-        
+        // Create the Node.js script for chart generation
+        string chartScript = CreateChartScript(xData, yData);
+
+        // Execute the Node.js script and capture the chart image
+        return RunNodeScript(chartScript);
     }
 
     private void prepareData(List<Loner> loners)
@@ -62,5 +68,71 @@ public class ChartGenerator
             yData.Add(loner.AloneInMillis / (60000)); // convert to minutes
         }
     }
-    
+      private string CreateChartScript(List<string> xData, List<double> yData)
+    {
+        // Generate a Node.js script string with Chart.js code
+        return $@"
+const {"ChartJSNodeCanvas"} = require('chartjs-node-canvas');
+const fs = require('fs');
+
+(async () => {{
+    const width = 800;
+    const height = 600;
+    const chartJSNodeCanvas = new ChartJSNodeCanvas({{ width, height }});
+
+    const configuration = {{
+        type: 'bar',
+        data: {{
+            labels: {JsonConvert.SerializeObject(xData)},
+            datasets: [{{
+                label: 'Time Alone (minutes)',
+                data: {JsonConvert.SerializeObject(yData)},
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }}]
+        }},
+        options: {{
+            scales: {{
+                y: {{
+                    beginAtZero: true
+                }}
+            }}
+        }}
+    }};
+
+    const image = await chartJSNodeCanvas.renderToBuffer(configuration);
+    fs.writeFileSync('chart.png', image);
+    console.log('Chart saved as chart.png');
+}})();
+";
+    }
+
+    private byte[] RunNodeScript(string script)
+    {
+        string tempScriptPath = Path.Combine(Path.GetTempPath(), "generate_chart.js");
+        File.WriteAllText(tempScriptPath, script);
+
+        // Execute the Node.js script
+        var processInfo = new ProcessStartInfo("node", tempScriptPath)
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = Process.Start(processInfo);
+        process.WaitForExit();
+
+        // Read the generated image file
+        string chartPath = Path.Combine(Path.GetTempPath(), "chart.png");
+        byte[] imageData = File.ReadAllBytes(chartPath);
+
+        // Clean up temporary files
+        File.Delete(tempScriptPath);
+        File.Delete(chartPath);
+
+        return imageData;
+    }
 }
