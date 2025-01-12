@@ -25,7 +25,7 @@ public class RizzController : ControllerBase
     public IActionResult GetRandom(bool withContext, bool asObject)
     {
         // Check if either parameter requires permission
-        if ((withContext || asObject) && (!User.Identity.IsAuthenticated || !User.HasClaim(c => c.Type == "Rights" && c.Value == "True")))
+        if ((withContext) && (!User.Identity.IsAuthenticated || !User.HasClaim(c => c.Type == "Rights" && c.Value == "True")))
         {
             return Unauthorized("Access denied: please log in with appropriate permissions.");
         }
