@@ -9,7 +9,15 @@ public class Quote
     public string person { get; set; }
     public string? Context { get; set; }
     public DateTime DateTimeCreated { get; set; }
+    public string? GeneratedQuote
+    {
+        get
+        {
+            return this.ToString();
+        } 
+    }
 
+    
     public override string ToString()
     {
         return text + " - " + person + " " + DateTimeCreated.ToString("dd/MM/yyyy HH:mm");
