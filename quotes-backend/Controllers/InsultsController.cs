@@ -9,6 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace quotes_backend.Controllers;
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class InsultsController : ControllerBase
 {
     private InsultsCollection _insultsCollection;

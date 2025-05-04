@@ -8,6 +8,7 @@ namespace quotes_backend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class RizzController : ControllerBase
 {
     private RizzCollection _RizzCollection;
