@@ -78,10 +78,10 @@ public class InsultsCollection
         bool created =_InsultInterface.NewInsult(quote);
         return created;
     }
-    public bool UpdateQuote(string id, Quote quote, bool HasRights)
+    public bool UpdateQuote(string id, Quote quote)
     {
         QuoteDTO quoteDto = quote.ConvertToDTO();
-        bool updated = _InsultInterface.UpdateInsult(id, quoteDto, HasRights);
+        bool updated = _InsultInterface.UpdateInsult(id, quoteDto);
         return updated;
     }
     public bool DeleteInsult(string id)

@@ -8,7 +8,7 @@ public interface IQuoteDAL
     bool NewQuote(QuoteDTOPost QuoteDTO);
     List<QuoteDTO> GetAllQuotes(bool HasRights);
     int CountDocuments();
-    bool UpdateQuote(string id, QuoteDTO quoteDto, bool HasRights);
+    bool UpdateQuote(string id, QuoteDTO quoteDto);
     bool DeleteQuote(string id);
     QuoteDTO FindQuoteBasedOnText(string text);
     QuoteDTO GetQuote(string id);

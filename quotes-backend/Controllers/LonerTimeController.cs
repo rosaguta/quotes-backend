@@ -18,7 +18,7 @@ public class LonerTimeController : ControllerBase
     }
 
     [HttpGet]
-    [SwaggerOperation(Summary = "Get Loner Time", Description = "Get all Loners from the db", Tags = new[] { "LonerTime" })]
+    [SwaggerOperation(Summary = "Get Loner Time (Requires AUTH)", Description = "Get all Loners from the db", Tags = new[] { "LonerTime" })]
     public IActionResult getLoners()
     {
         List<Loner>? loners = _lonerCollection.GetAllLoners();
@@ -36,7 +36,7 @@ public class LonerTimeController : ControllerBase
     }
     
     [HttpPost]
-    [SwaggerOperation(Summary = "Add Loner Time", Description = "Post the Loner Time", Tags = new[] { "LonerTime" })]
+    [SwaggerOperation(Summary = "Add Loner Time (Requires AUTH)", Description = "Post the Loner Time", Tags = new[] { "LonerTime" })]
     public IActionResult postTime([FromBody] Loner loner)
     {
         bool posted = _lonerCollection.PostTime(loner);
@@ -47,7 +47,7 @@ public class LonerTimeController : ControllerBase
         return BadRequest();
     }
     [HttpGet("graph")]
-    [SwaggerOperation(Summary = "Get Loner Time", Description = "Get all Loners from the db", Tags = new[] { "LonerTime" })]
+    [SwaggerOperation(Summary = "Get Loner Time (Requires AUTH)", Description = "Get all Loners from the db", Tags = new[] { "LonerTime" })]
     public IActionResult graphImage()
     {
         List<Loner>? loners = _lonerCollection.GetAllLoners();

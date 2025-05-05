@@ -145,10 +145,10 @@ public class QuoteCollection
         QuoteDTO? quoteDto = _QuoteInterface.FindQuoteBasedOnContext(context);
         return quoteDto.ConvertToLogic();
     }
-    public bool UpdateQuote(string id, Quote quote, bool HasRights)
+    public bool UpdateQuote(string id, Quote quote)
     {
         QuoteDTO quoteDto = quote.ConvertToDTO();
-        bool updated = _QuoteInterface.UpdateQuote(id, quoteDto, HasRights);
+        bool updated = _QuoteInterface.UpdateQuote(id, quoteDto);
         return updated;
     }
 
