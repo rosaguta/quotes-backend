@@ -74,7 +74,7 @@ public class InsultsController : ControllerBase
                 return NoContent();
             }
 
-            return Unauthorized("Please kys or login to retrieve the context");
+            return Unauthorized("Please Authenticate to retrieve the context");
         }
 
         if (context is not null)
@@ -90,7 +90,7 @@ public class InsultsController : ControllerBase
                 return NoContent();
             }
 
-            return Unauthorized("Please kys or login to retrieve the context");
+            return Unauthorized("Please Authenticate to retrieve the context");
         }
 
         if (Rights.hasRights(User))
