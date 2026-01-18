@@ -9,13 +9,10 @@ namespace quotes_backend.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class RizzController : ControllerBase
+public class RizzController : ContentControllerBase
 {
-    private RizzCollection _RizzCollection;
-
-    public RizzController()
+    public RizzController() : base(new ContentCollection(Factory.DalFactory.GetRizzDal()), "Rizz")
     {
-        _RizzCollection = new RizzCollection();
     }
 
     [SwaggerOperation(
@@ -24,24 +21,9 @@ public class RizzController : ControllerBase
     )]
     [HttpGet]
     [Route("/Rizzes/Random")]
-    public IActionResult GetRandom(bool withContext, bool asObject)
+    public override IActionResult GetRandom(bool withContext, bool asObject)
     {
-        // Check if either parameter requires permission
-        if ((withContext) && !Rights.hasRights(User))
-        {
-            return Unauthorized("Access denied: please log in with appropriate permissions.");
-        }
-
-        // Fetch the quote based on the parameters
-        object? quote = _RizzCollection.GetRandomRizz(withContext, asObject);
-
-        // Validate the quote object
-        if (quote == null || quote.ToString() == string.Empty)
-        {
-            return BadRequest("An error occurred while fetching the quote. Please contact support.");
-        }
-
-        return Ok(quote);
+        return base.GetRandom(withContext, asObject);
     }
 
     [SwaggerOperation(
@@ -50,63 +32,10 @@ public class RizzController : ControllerBase
     )]
     [HttpGet]
     [Route("/Rizzes")]
-    public IActionResult GetAllRizz(string? text, string? context)
+    public IActionResult GetAllRizz(string? text, string? context, string? id)
     {
-        if (text is not null && context is not null)
-        {
-            return BadRequest("You can only provide the `text` OR the `context` params");
-        }
-
-        List<Quote>? allquotes = new List<Quote>();
-        if (text is not null)
-        {
-            if (Rights.hasRights(User))
-            {
-                allquotes.Add(_RizzCollection.FindRizzBasedOnText(text));
-                if (allquotes.Count != 0)
-                {
-                    return Ok(allquotes);
-                }
-
-                return NoContent();
-            }
-
-            return Unauthorized("Login to retrieve the context");
-        }
-
-        if (context is not null)
-        {
-            if (Rights.hasRights(User))
-            {
-                allquotes.Add(_RizzCollection.FindRizzBasedOnContext(context));
-                if (allquotes.Count != 0 && allquotes[0].text is not null)
-                {
-                    return Ok(allquotes);
-                }
-
-                return NoContent();
-            }
-
-            return Unauthorized("Login to retrieve the context");
-        }
-
-        if (Rights.hasRights(User))
-        {
-            allquotes = _RizzCollection.GetAllRizz(true);
-        }
-        else
-        {
-            allquotes = _RizzCollection.GetAllRizz(false);
-        }
-
-        if (allquotes.Count != 0)
-        {
-            return Ok(allquotes);
-        }
-
-        return NoContent();
+        return base.GetAllItems(text, context, id);
     }
-
 
     [SwaggerOperation(
         Summary = "Adds a new Rizz (Requires AUTH)",
@@ -114,20 +43,9 @@ public class RizzController : ControllerBase
     )]
     [HttpPost]
     [Route("/Rizzes"), Authorize]
-    public IActionResult NewRizz([FromBody] QuoteDTOPost rizzpost)
+    public override IActionResult Create([FromBody] QuoteDTOPost rizzpost)
     {
-        if (Rights.hasRights(User))
-        {
-            bool created = _RizzCollection.NewRizz(rizzpost);
-            if (created)
-            {
-                return Ok(created);
-            }
-
-            return BadRequest(created);
-        }
-
-        return Forbid();
+        return base.Create(rizzpost);
     }
 
     [SwaggerOperation(
@@ -136,39 +54,17 @@ public class RizzController : ControllerBase
     )]
     [HttpPut]
     [Route("/Rizzes/{id}"), Authorize]
-    public IActionResult UpdateRizz(string id, [FromBody] Quote rizz)
+    public override IActionResult Update(string id, [FromBody] Quote rizz)
     {
-        if (Rights.hasRights(User))
-        {
-            bool updated = _RizzCollection.UpdateRizz(id, rizz);
-            if (updated)
-            {
-                return Ok(updated);
-            }
-
-            return BadRequest(updated);
-        }
-
-        return Forbid();
+        return base.Update(id, rizz);
     }
 
     [HttpDelete]
     [Route("/Rizzes/{id}")]
     [SwaggerOperation(Summary = "Deletes a single rizz Requires AUTH",
         Description = "Requires special permissions to delete some rizz")]
-    public IActionResult DeleteRizz(string id)
+    public override IActionResult Delete(string id)
     {
-        if (Rights.hasRights(User))
-        {
-            bool deleted = _RizzCollection.DeleteRizz(id);
-            if (deleted)
-            {
-                return Ok();
-            }
-
-            return BadRequest();
-        }
-
-        return Forbid();
+        return base.Delete(id);
     }
 }

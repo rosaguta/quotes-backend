@@ -12,6 +12,22 @@ public class RizzDAL : IRizzDAL
     {
         _mongodbclient = new MongoClient(GetConnectionString());
     }   
+    public QuoteDTO? GetRandom(int randomint, bool hasRights) => GetRandomRizz(randomint, hasRights);
+    public QuoteDTO New(QuoteDTOPost dto) => NewRizz(dto);
+    public List<QuoteDTO> GetAll(bool hasRights) => GetAllRizz(hasRights);
+    public bool Update(string id, QuoteDTO dto) => UpdateRizz(id, dto);
+    public bool Delete(string id) => DeleteRizz(id);
+    public QuoteDTO FindByText(string text) => FindRizzBasedOnText(text);
+    public QuoteDTO GetById(string id) => GetRizz(id);
+
+    public QuoteDTO GetRizz(string id)
+    {
+        IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("rizz");
+        var filter = Builders<QuoteDTO>.Filter.Eq(q => q.id, id);
+        return collection.Find(filter).FirstOrDefault();
+    }
+    public QuoteDTO FindByContext(string context) => FindRizzBasedOnContext(context);
+
     public int CountDocuments()
     {
         IMongoCollection<BsonDocument> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("rizz");
@@ -20,7 +36,7 @@ public class RizzDAL : IRizzDAL
         return totalCountInt;
     }
 
-    public bool NewRizz(QuoteDTOPost quoteDto)
+    public QuoteDTO? NewRizz(QuoteDTOPost quoteDto)
     {
         BsonDocument bsonDocument = quoteDto.ToBsonDocument();
 
@@ -33,10 +49,17 @@ public class RizzDAL : IRizzDAL
         catch (Exception exception)
         {
             Console.WriteLine(exception);
-            return false;
+            return null;
         }
-        
-        return true;
+
+        return new QuoteDTO
+        {
+            id = bsonDocument["_id"].ToString(),
+            text = bsonDocument["Text"].ToString(),
+            person = bsonDocument["Person"].ToString(),
+            DateTimeCreated = DateTime.Parse(bsonDocument["DateTimeCreated"].ToString()),
+            Context = bsonDocument.Contains("Context") ? bsonDocument["Context"].ToString() : null
+        };
     }
 
     public List<QuoteDTO> GetAllRizz(bool HasRights)

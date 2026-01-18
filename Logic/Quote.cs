@@ -20,7 +20,7 @@ public class Quote
     
     public override string ToString()
     {
-        return text + " - " + person + " " + DateTimeCreated.ToString("dd/MM/yyyy HH:mm");
+        return text + " - " + person + " " + ToTimeZoneTime(DateTimeCreated, "W. Europe Standard Time").ToString("dd/MM/yyyy HH:mm");
     }
 
     public string ToStringWithContext()
@@ -29,6 +29,24 @@ public class Quote
         {
             Context = "";
         }
-        return text + " - " + person + " " + DateTimeCreated.ToString("dd/MM/yyyy HH:mm") + " | " + Context;
+        return text + " - " + person + " " + ToTimeZoneTime(DateTimeCreated, "W. Europe Standard Time").ToString("dd/MM/yyyy HH:mm") + " | " + Context;
     }
+    private static DateTime ToTimeZoneTime(DateTime time, string timeZoneId)
+    {
+        var tzi = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+        DateTime utcTime;
+        if (time.Kind == DateTimeKind.Local)
+        {
+            utcTime = time.ToUniversalTime();
+        }
+        else
+        {
+            utcTime = DateTime.SpecifyKind(time, DateTimeKind.Utc);
+        }
+
+        return TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi);
+    }
+
+    
 }

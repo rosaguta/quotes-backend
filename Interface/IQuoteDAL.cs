@@ -2,12 +2,11 @@
 using DTO;
 namespace Interface;
 
-public interface IQuoteDAL
+public interface IQuoteDAL : IContentDAL
 {
     QuoteDTO? GetRandomQuote(int randomint, bool hasRights);
-    bool NewQuote(QuoteDTOPost QuoteDTO);
+    QuoteDTO? NewQuote(QuoteDTOPost QuoteDTO);
     List<QuoteDTO> GetAllQuotes(bool HasRights);
-    int CountDocuments();
     bool UpdateQuote(string id, QuoteDTO quoteDto);
     bool DeleteQuote(string id);
     QuoteDTO FindQuoteBasedOnText(string text);

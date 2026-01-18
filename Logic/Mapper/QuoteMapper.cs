@@ -4,7 +4,7 @@ namespace Logic.Mapper;
 
 public static class QuoteMapper
 {
-    public static Quote ConvertToLogic(this QuoteDTO quoteDto)
+    public static Quote ConvertToLogic(this QuoteDTO? quoteDto)
     {
         if (quoteDto is null)
         {

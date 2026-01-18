@@ -1,12 +1,11 @@
 using DTO;
 namespace Interface;
 
-public interface IInsultDAL
+public interface IInsultDAL : IContentDAL
 {
     QuoteDTO? GetRandomInsult(int randomint, bool hasRights);
-    bool NewInsult(QuoteDTOPost InsultDTO);
+    QuoteDTO? NewInsult(QuoteDTOPost InsultDTO);
     List<QuoteDTO> GetAllInsults(bool HasRights);
-    int CountDocuments();
     bool UpdateInsult(string id, QuoteDTO InsultDto);
     bool DeleteInsult(string id);
     QuoteDTO FindInsultBasedOnText(string text);

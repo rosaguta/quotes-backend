@@ -24,6 +24,15 @@ public class QuoteDAL : IQuoteDAL
         }
     }
 
+    public QuoteDTO? GetRandom(int randomint, bool hasRights) => GetRandomQuote(randomint, hasRights);
+    public QuoteDTO New(QuoteDTOPost dto) => NewQuote(dto);
+    public List<QuoteDTO> GetAll(bool hasRights) => GetAllQuotes(hasRights);
+    public bool Update(string id, QuoteDTO dto) => UpdateQuote(id, dto);
+    public bool Delete(string id) => DeleteQuote(id);
+    public QuoteDTO FindByText(string text) => FindQuoteBasedOnText(text);
+    public QuoteDTO GetById(string id) => GetQuote(id);
+    public QuoteDTO FindByContext(string context) => FindQuoteBasedOnContext(context);
+
     public QuoteDTO? GetRandomQuote(int randomint, bool hasRights)
     {
         IMongoCollection<BsonDocument> collection =
@@ -61,23 +70,30 @@ public class QuoteDAL : IQuoteDAL
         }
     }
 
-    public bool NewQuote(QuoteDTOPost quoteDto)
+    public QuoteDTO? NewQuote(QuoteDTOPost quoteDto)
     {
         BsonDocument bsonDocument = quoteDto.ToBsonDocument();
-
+        IMongoCollection<BsonDocument> collection =
+            _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
         try
         {
-            IMongoCollection<BsonDocument> collection =
-                _mongodbclient.GetDatabase("Quotes").GetCollection<BsonDocument>("quotes");
+          
             collection.InsertOne(bsonDocument);
         }
         catch (Exception exception)
         {
             Console.WriteLine(exception);
-            return false;
+            return null;
         }
 
-        return true;
+        return new QuoteDTO
+        {
+            id = bsonDocument["_id"].ToString(),
+            text = bsonDocument["Text"].ToString(),
+            person = bsonDocument["Person"].ToString(),
+            DateTimeCreated = DateTime.Parse(bsonDocument["DateTimeCreated"].ToString()),
+            Context = bsonDocument.Contains("Context") ? bsonDocument["Context"].ToString() : null
+        };
     }
 
     public List<QuoteDTO> GetAllQuotes(bool HasRights)

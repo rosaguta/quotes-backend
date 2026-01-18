@@ -11,13 +11,10 @@ namespace quotes_backend.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class InsultsController : ControllerBase
+public class InsultsController : ContentControllerBase
 {
-    private InsultsCollection _insultsCollection;
-
-    public InsultsController()
+    public InsultsController() : base(new ContentCollection(Factory.DalFactory.GetInsultDal()), "Insult")
     {
-        _insultsCollection = new InsultsCollection();
     }
 
     [SwaggerOperation(
@@ -26,25 +23,9 @@ public class InsultsController : ControllerBase
     )]
     [HttpGet]
     [Route("Random")]
-    public IActionResult GetRandom(bool withContext, bool asObject)
+    public override IActionResult GetRandom(bool withContext, bool asObject)
     {
-        // Check if either parameter requires permission
-        if ((withContext) && (!User.Identity.IsAuthenticated ||
-                              !User.HasClaim(c => c.Type == "Rights" && c.Value == "True")))
-        {
-            return Unauthorized("Access denied: please log in with appropriate permissions.");
-        }
-
-        // Fetch the quote based on the parameters
-        object? quote = _insultsCollection.GetRandomInsult(withContext, asObject);
-
-        // Validate the quote object
-        if (quote == null || quote.ToString() == string.Empty)
-        {
-            return BadRequest("An error occurred while fetching the quote. Please contact support.");
-        }
-
-        return Ok(quote);
+        return base.GetRandom(withContext, asObject);
     }
 
     [SwaggerOperation(
@@ -53,79 +34,18 @@ public class InsultsController : ControllerBase
     )]
     [HttpGet]
     [Route("/Insults")]
-    public IActionResult AllInsults(string? text, string? context)
+    public IActionResult AllInsults(string? text, string? context, string? id)
     {
-        if (text is not null && context is not null)
-        {
-            return BadRequest("You can only provide the `text` OR the `context` params");
-        }
-
-        List<Quote> allquotes = new List<Quote>();
-        if (text is not null)
-        {
-            if (Rights.hasRights(User))
-            {
-                allquotes.Add(_insultsCollection.FindInsultBasedOnContext(text));
-                if (allquotes.Count != 0)
-                {
-                    return Ok(allquotes);
-                }
-
-                return NoContent();
-            }
-
-            return Unauthorized("Please Authenticate to retrieve the context");
-        }
-
-        if (context is not null)
-        {
-            if (Rights.hasRights(User))
-            {
-                allquotes.Add(_insultsCollection.FindInsultBasedOnContext(context));
-                if (allquotes.Count != 0 && allquotes[0].text is not null)
-                {
-                    return Ok(allquotes);
-                }
-
-                return NoContent();
-            }
-
-            return Unauthorized("Please Authenticate to retrieve the context");
-        }
-
-        if (Rights.hasRights(User))
-        {
-            allquotes = _insultsCollection.GetAllInsults(true);
-        }
-        else
-        {
-            allquotes = _insultsCollection.GetAllInsults(false);
-        }
-
-        if (allquotes.Count != 0)
-        {
-            return Ok(allquotes);
-        }
-
-        return NoContent();
+        return base.GetAllItems(text, context, id);
     }
 
     [SwaggerOperation(
         Summary = "Adds a new Insult (requires AUTH)"
     )]
     [HttpPost(Name = "NewInsult"), Authorize]
-    public IActionResult NewQuote([FromBody] QuoteDTOPost insult)
+    public override IActionResult Create([FromBody] QuoteDTOPost insult)
     {
-        if (Rights.hasRights(User))
-        {
-            bool created = _insultsCollection.NewInsult(insult);
-            if (created)
-            {
-                return Ok();
-            }
-        }
-
-        return Forbid();
+        return base.Create(insult);
     }
 
     [SwaggerOperation(
@@ -133,20 +53,9 @@ public class InsultsController : ControllerBase
     )]
     [HttpPut]
     [Route("{id}"), Authorize]
-    public IActionResult Update(string id, [FromBody] Quote quote)
+    public override IActionResult Update(string id, [FromBody] Quote quote)
     {
-        bool updated = false;
-        if (Rights.hasRights(User))
-        {
-            updated = _insultsCollection.UpdateQuote(id, quote);
-            if (updated)
-            {
-                return Ok();
-            }
-
-            return BadRequest();
-        }
-        return Forbid();
+        return base.Update(id, quote);
     }
 
     [SwaggerOperation(
@@ -154,14 +63,8 @@ public class InsultsController : ControllerBase
     )]
     [HttpDelete]
     [Route("{id}"), Authorize]
-    public IActionResult Delete(string id)
+    public override IActionResult Delete(string id)
     {
-        bool deleted = _insultsCollection.DeleteInsult(id);
-        if (deleted)
-        {
-            return Ok();
-        }
-
-        return BadRequest();
+        return base.Delete(id);
     }
 }

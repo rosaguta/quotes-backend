@@ -21,6 +21,22 @@ public class InsultDAL : IInsultDAL
         }
     }
 
+    public QuoteDTO? GetRandom(int randomint, bool hasRights) => GetRandomInsult(randomint, hasRights);
+    public QuoteDTO New(QuoteDTOPost dto) => NewInsult(dto);
+    public List<QuoteDTO> GetAll(bool hasRights) => GetAllInsults(hasRights);
+    public bool Update(string id, QuoteDTO dto) => UpdateInsult(id, dto);
+    public bool Delete(string id) => DeleteInsult(id);
+    public QuoteDTO FindByText(string text) => FindInsultBasedOnText(text);
+    public QuoteDTO GetById(string id) => GetInsult(id);
+
+    public QuoteDTO GetInsult(string id)
+    {
+        IMongoCollection<QuoteDTO> collection = _mongodbclient.GetDatabase("Quotes").GetCollection<QuoteDTO>("insults");
+        var filter = Builders<QuoteDTO>.Filter.Eq(q => q.id, id);
+        return collection.Find(filter).FirstOrDefault();
+    }
+    public QuoteDTO FindByContext(string context) => FindInsultBasedOnContext(context);
+
     public QuoteDTO? GetRandomInsult(int randomint, bool hasRights)
     {
         IMongoCollection<BsonDocument> collection =
@@ -151,7 +167,7 @@ public class InsultDAL : IInsultDAL
         }
     }
 
-    public bool NewInsult(QuoteDTOPost InsultDTO)
+    public QuoteDTO? NewInsult(QuoteDTOPost InsultDTO)
     {
         BsonDocument bsonDocument = InsultDTO.ToBsonDocument();
         try
@@ -163,10 +179,17 @@ public class InsultDAL : IInsultDAL
         catch (Exception exception)
         {
             Console.WriteLine(exception);
-            return false;
+            return null;
         }
 
-        return true;
+        return new QuoteDTO
+        {
+            id = bsonDocument["_id"].ToString(),
+            text = bsonDocument["Text"].ToString(),
+            person = bsonDocument["Person"].ToString(),
+            DateTimeCreated = DateTime.Parse(bsonDocument["DateTimeCreated"].ToString()),
+            Context = bsonDocument.Contains("Context") ? bsonDocument["Context"].ToString() : null
+        };
     }
 
     public bool UpdateInsult(string id, QuoteDTO quoteDto)
