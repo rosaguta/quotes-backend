@@ -44,15 +44,15 @@ public abstract class ContentControllerBase : ControllerBase
             return BadRequest("You can only provide one of the following params: `text`, `context`, or `id`.");
         }
 
-        List<Quote> items = new List<Quote>();
-
         if (id is not null)
         {
             var found = Collection.GetById(id);
-            if (found != null && found.text != null) items.Add(found);
-            
-            if (items.Count != 0) return Ok(items);
-            return NoContent();
+            if (String.IsNullOrEmpty(found.text))
+            {
+                return BadRequest();
+            }
+
+            return Ok(found);
         }
 
         if (text is not null)
@@ -60,10 +60,12 @@ public abstract class ContentControllerBase : ControllerBase
             if (Rights.hasRights(User))
             {
                 var found = Collection.FindByText(text);
-                if (found != null && found.text != null) items.Add(found);
+                if (String.IsNullOrEmpty(found.text))
+                {
+                    return BadRequest();
+                }
                 
-                if (items.Count != 0) return Ok(items);
-                return NoContent();
+                return Ok(found);
             }
             return Unauthorized("Please Authenticate to retrieve the context");
         }
@@ -73,15 +75,17 @@ public abstract class ContentControllerBase : ControllerBase
             if (Rights.hasRights(User))
             {
                 var found = Collection.FindByContext(context);
-                if (found != null && found.text != null) items.Add(found);
-
-                if (items.Count != 0) return Ok(items);
-                return NoContent();
+                if (String.IsNullOrEmpty(found.text))
+                {
+                    return BadRequest();
+                }
+                return Ok(found);
+                
             }
             return Unauthorized("Please Authenticate to retrieve the context");
         }
 
-        items = Collection.GetAll(Rights.hasRights(User));
+        var items = Collection.GetAll(Rights.hasRights(User));
         
         if (items.Count != 0) return Ok(items);
         return NoContent();
