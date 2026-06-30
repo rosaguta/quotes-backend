@@ -44,6 +44,9 @@
       <EmbeddedResource Include="Content\image\div_logo_white2.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
+      <None Update="Content\image\Rose_heart.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
