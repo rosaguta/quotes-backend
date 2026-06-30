@@ -1,7 +1,13 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace DTO;
 
 public class MarkovDataDTO
 {
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? id { get; set; }
     public required string Text { get; set; }
     public required string DiscordMessageId { get; set; }
     public required string DiscordChannelId { get; set; }
