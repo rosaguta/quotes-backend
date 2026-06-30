@@ -28,4 +28,10 @@ public static class DalFactory
     {
         return new LonerDAL();
     }
+
+    public static IMarkovDAL GetMarkovDal()
+    {
+        return new MarkovDAL();
+    }
+    
 }
